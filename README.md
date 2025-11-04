@@ -2,7 +2,7 @@
 
 CodePath WEB103 Final Project
 
-Designed and developed by: Assol Abasova, Kelly Chan, Arsheen Taj Syed
+Designed and developed by: Kelly Chan, Arsheen Taj Syed
 
 🔗 Link to deployed app:
 
