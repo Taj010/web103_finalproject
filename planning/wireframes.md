@@ -44,7 +44,7 @@ Reference the Creating an Entity Relationship Diagram final project guide in the
 
 ![Add Page Wireframe](wireframe-images/Add-Page.png)
 
-## Wireframe 8: Add Page Detaisl View
+## Wireframe 8: Add Page Details View
 
 ![Add Page Details Wireframe](wireframe-images/Page-Details.png)
 
