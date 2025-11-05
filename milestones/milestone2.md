@@ -22,8 +22,8 @@ Designing the low-fidelity wireframes for our project went really well. Our grou
 
 ### 2. What were some challenges your group faced in this unit?
 
-One challenge we faced was narrowing down all of our ideas into something that’s realistic for our timeline. We had a lot of creative concepts—like music integration and sticker customization—but had to decide which ones were essential for the first version of our app. It was also a bit tricky coordinating what parts we should do, so communication took some extra effort.
+One challenge we faced was narrowing down all of our ideas into something that’s realistic for our timeline. We had a lot of creative concepts, like music integration and sticker customization, but had to decide which ones were essential for the first version of our app. It was also a bit tricky coordinating what parts we should do, so communication took some extra effort.
 
 ### 3. What additional support will you need in upcoming units as you continue to work on your final project?
 
-As we move forward, we’ll need more support with the technical side of implementation—especially setting up the database relationships (like many-to-many tables) and integrating external APIs such as Spotify. We’d also appreciate guidance on front-end design tools or techniques to help us make the sticker and collage features both functional and visually appealing.
+As we move forward, we’ll need more support with the technical side of implementation, especially setting up the database relationships (like many-to-many tables) and integrating external APIs such as Spotify. We’d also appreciate guidance on front-end design tools or techniques to help us make the sticker and collage features both functional and visually appealing.
