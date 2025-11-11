@@ -1,0 +1,654 @@
+/* Reset and Base Styles */
+.add-page-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #fff5e7; /* Page background color */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main Container - Three-Column Layout */
+.main-container {
+  display: grid;
+  grid-template-columns: 250px 1fr 80px; /* Left sidebar, center, right sidebar */
+  flex: 1;
+  gap: 0;
+  height: calc(100vh - 120px); 
+}
+
+/* Left Sidebar - Editor Tools */
+.editor-sidebar {
+  background-color: white;
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+  border-right: 1px solid #e0d9c7;
+}
+
+/* Editor Section Styles */
+.editor-section {
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.section-header.clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+
+.section-header.clickable:hover {
+  opacity: 0.7;
+}
+
+.star-icon {
+  font-size: 1rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+  flex: 1;
+}
+
+.chevron-icon {
+  font-size: 0.8rem;
+  color: #666;
+  transition: transform 0.3s ease;
+  margin-left: auto;
+}
+
+.chevron-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0;
+}
+
+.section-content.expanded {
+  max-height: 1000px;
+  padding: 1rem 0;
+}
+
+.section-content.collapsed {
+  max-height: 0;
+  padding: 0;
+}
+
+/* Page Color Section */
+.color-swatches {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.color-swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  cursor: pointer;
+  padding: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.color-swatch.selected {
+  border-width: 3px;
+  border-color: #3d2817;
+}
+
+.swatch-inner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: block;
+}
+
+.color-swatch.white .swatch-inner {
+  background-color: white;
+  border: 1px solid #ddd;
+}
+
+.color-swatch.gray .swatch-inner {
+  background-color: #808080;
+}
+
+.color-swatch.black .swatch-inner {
+  background-color: #000000;
+}
+
+/* Step 6: Stickers Section */
+.stickers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.sticker-item {
+  aspect-ratio: 1;
+  border: 2px solid #e0d9c7;
+  border-radius: 8px;
+  background-color: #fafafa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+.sticker-item:hover {
+  border-color: #3d2817;
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sticker-item .sticker-emoji {
+  font-size: 2rem;
+}
+
+/* Stickers on Canvas */
+.canvas-sticker {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  z-index: 10; /* Stickers layer - above doodles, below text */
+  transition: transform 0.1s ease;
+  padding: 5px;
+  min-width: 50px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canvas-sticker:hover {
+  transform: scale(1.05);
+  background-color: rgba(61, 40, 23, 0.05);
+  border-radius: 8px;
+}
+
+.canvas-sticker.dragging {
+  transform: scale(1.1);
+  opacity: 0.9;
+  z-index: 100;
+  background-color: rgba(61, 40, 23, 0.1);
+  border-radius: 8px;
+}
+
+.canvas-sticker-emoji {
+  pointer-events: none;
+  display: block;
+}
+
+/* Step 7: Doodles Section */
+.doodle-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.doodle-btn {
+  background-color: #3d2817;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.doodle-btn:hover {
+  background-color: #2d1f12;
+}
+
+.doodle-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.doodle-color-picker {
+  width: 100%;
+  height: 40px;
+  border: 2px solid #e0d9c7;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.doodle-brush-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #e0d9c7;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.doodle-brush-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3d2817;
+  cursor: pointer;
+}
+
+.doodle-brush-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3d2817;
+  cursor: pointer;
+  border: none;
+}
+
+.brush-size-value {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
+
+.button-group {
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.button-group .doodle-btn {
+  flex: 1;
+}
+
+/* Doodle Canvas Overlay */
+.doodle-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 8; /* Doodles layer - above images, below stickers */
+  touch-action: none;
+}
+
+.doodle-canvas.active {
+  pointer-events: all;
+  cursor: crosshair;
+}
+
+/* When doodling is active, disable dragging on other elements */
+.page-canvas:has(.doodle-canvas.active) .canvas-sticker,
+.page-canvas:has(.doodle-canvas.active) .canvas-text,
+.page-canvas:has(.doodle-canvas.active) .canvas-image {
+  pointer-events: none;
+}
+
+/* Step 8: Text Section */
+.text-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.text-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #e0d9c7;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: #3d2817;
+}
+
+.text-size-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #e0d9c7;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.text-size-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3d2817;
+  cursor: pointer;
+}
+
+.text-size-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3d2817;
+  cursor: pointer;
+  border: none;
+}
+
+.text-size-value {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
+
+.text-color-picker {
+  width: 100%;
+  height: 40px;
+  border: 2px solid #e0d9c7;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.text-btn {
+  background-color: #3d2817;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.text-btn:hover {
+  background-color: #2d1f12;
+}
+
+/* Text Elements on Canvas */
+.canvas-text {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  z-index: 15; /* Text layer - top layer */
+  padding: 0.5rem;
+  border: 2px dashed transparent;
+  border-radius: 4px;
+  min-width: 50px;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.canvas-text:hover {
+  border-color: #3d2817;
+  transform: scale(1.02);
+  background-color: rgba(61, 40, 23, 0.05);
+}
+
+.canvas-text.dragging {
+  transform: scale(1.05);
+  opacity: 0.9;
+  border-color: #3d2817;
+  background-color: rgba(61, 40, 23, 0.1);
+  z-index: 100;
+}
+
+.canvas-text-content {
+  pointer-events: none;
+  white-space: nowrap;
+  display: block;
+}
+
+/* Step 9: Upload Images Section */
+.upload-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.upload-area {
+  border: 2px dashed #e0d9c7;
+  border-radius: 8px;
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #fafafa;
+}
+
+.upload-area:hover {
+  border-color: #3d2817;
+  background-color: #f5f5f5;
+}
+
+.upload-area.drag-over {
+  border-color: #3d2817;
+  background-color: #f0f0f0;
+  border-style: solid;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.upload-text {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 0.25rem 0;
+  font-weight: 500;
+}
+
+.upload-hint {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0.25rem 0 0 0;
+}
+
+/* Images on Canvas */
+.canvas-image {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  z-index: 5; /* Images layer - above background, below doodles */
+  border: 2px dashed transparent;
+  border-radius: 4px;
+  transition: transform 0.1s ease, border-color 0.2s ease, background-color 0.2s ease;
+  padding: 5px;
+  background-color: transparent;
+}
+
+.canvas-image:hover {
+  border-color: #3d2817;
+  transform: scale(1.02);
+  background-color: rgba(61, 40, 23, 0.05);
+}
+
+.canvas-image.dragging {
+  transform: scale(1.05);
+  opacity: 0.9;
+  border-color: #3d2817;
+  background-color: rgba(61, 40, 23, 0.1);
+  z-index: 100;
+}
+
+.canvas-image-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  pointer-events: none;
+  display: block;
+}
+
+/* Center Section - Page Canvas */
+.page-section {
+  background-color: #fff5e7; /* Page background color */
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.page-title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #3d2817; /* Dark brown */
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.page-canvas {
+  background-color: white;
+  width: 100%;
+  max-width: 800px;
+  min-height: 600px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle gray shadow */
+  border-radius: 4px;
+  position: relative;
+  padding: 2rem;
+}
+
+/* Right Sidebar - Action Buttons */
+.action-buttons {
+  background-color: transparent;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  border-left: 1px solid #e0d9c7;
+  min-width: 80px;
+}
+
+/* Step 11: Action Buttons Styling */
+.action-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #3d2817; /* Black outline */
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  position: relative;
+}
+
+.action-btn:hover {
+  background-color: rgba(61, 40, 23, 0.1);
+  transform: scale(1.1);
+  border-color: #2d1f12;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-icon {
+  font-size: 1.5rem;
+  display: block;
+  line-height: 1;
+}
+
+.music-btn {
+  /* Music button specific styles if needed */
+}
+
+.chat-btn {
+  /* Chat bubble button specific styles if needed */
+}
+
+/* Footer Section */
+.add-page-footer {
+  background-color: #fff5e7; /* Page background color */
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #e0d9c7;
+}
+
+.next-btn {
+  background-color: #3d2817; /* Dark brown */
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.next-btn:hover {
+  background-color: #2d1f12;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .main-container {
+    grid-template-columns: 200px 1fr 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  .editor-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #e0d9c7;
+  }
+  
+  .action-buttons {
+    border-left: none;
+    border-top: 1px solid #e0d9c7;
+    flex-direction: row;
+    justify-content: center;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .action-btn {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .action-icon {
+    font-size: 1.25rem;
+  }
+}
+
