@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import '../css/CreateJournal.css';
 import axios from 'axios';
 
-// Cover options with colors and their corresponding image paths
+// Cover options - white removed from selectable options
 const coverOptions = [
-  { color: '#FFFFFF', name: 'white', image: null }, // White/blank default
   { color: '#FFB6D9', name: 'pink', image: '/covers/pinkcover.jpg' },
   { color: '#9ED9CC', name: 'green', image: '/covers/greencover.jpg' },
   { color: '#A0CED9', name: 'blue', image: '/covers/bluecover.jpg' },
@@ -19,45 +18,37 @@ const CreateJournal = () => {
 
   const [journalName, setJournalName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedCover, setSelectedCover] = useState(coverOptions[0]); // Default to white
-  const [customImage, setCustomImage] = useState(null); // For user uploaded image
+  const [selectedCover, setSelectedCover] = useState(null); // Start with null (no selection)
+  const [customImage, setCustomImage] = useState(null);
   const [customImagePreview, setCustomImagePreview] = useState(null);
 
-  // Back button handler
   const handleBack = () => navigate('/journals');
 
-  // Handle cover selection
   const handleCoverSelect = (cover) => {
     setSelectedCover(cover);
-    // Clear custom image when selecting a preset cover
     setCustomImage(null);
     setCustomImagePreview(null);
   };
 
-  // Handle custom image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('Please upload an image file.');
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert('Image size should be less than 5MB.');
       return;
     }
 
-    // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setCustomImagePreview(reader.result);
       setCustomImage(file);
-      // Clear selected preset cover when uploading custom image
-      setSelectedCover({ color: '#FFFFFF', name: 'custom', image: null });
+      setSelectedCover(null);
     };
     reader.readAsDataURL(file);
   };
@@ -70,13 +61,18 @@ const CreateJournal = () => {
       return;
     }
 
-    // If user uploaded a custom image, we need to handle it differently
+    // Validate that user selected a cover or uploaded an image
+    if (!selectedCover && !customImage) {
+      alert('Please choose a cover or upload an image.');
+      return;
+    }
+
     if (customImage) {
       const formData = new FormData();
       formData.append('name', journalName.trim());
       formData.append('description', description.trim());
       formData.append('coverImage', customImage);
-      formData.append('coverColor', selectedCover.color);
+      formData.append('coverColor', '#FFFFFF');
       formData.append('coverName', 'custom');
 
       try {
@@ -99,7 +95,6 @@ const CreateJournal = () => {
         }
       }
     } else {
-      // Use preset cover
       const journalData = {
         name: journalName.trim(),
         description: description.trim(),
@@ -137,35 +132,30 @@ const CreateJournal = () => {
       <h1>Create New Journal</h1>
 
       <div className="create-journal-container">
-        {/* Left: Cover preview */}
         <div className="cover-preview-section">
           <div className="cover-preview">
             {customImagePreview ? (
-              // Show custom uploaded image
               <img 
                 src={customImagePreview} 
                 alt="Custom journal cover"
                 className="cover-image"
               />
-            ) : selectedCover.image ? (
-              // Show preset cover image
+            ) : selectedCover?.image ? (
               <img 
                 src={selectedCover.image} 
                 alt={`${selectedCover.name} journal cover`}
                 className="cover-image"
               />
             ) : (
-              // Show white/blank cover
-              <div 
-                className="color-cover" 
-                style={{ backgroundColor: selectedCover.color }}
-              >
-                <span className="blank-cover-text">Blank Cover</span>
+              <div className="color-cover" style={{ backgroundColor: '#FFFFFF' }}>
+                <div className="blank-cover-content">
+                  <i className="fa-solid fa-image blank-cover-icon"></i>
+                  <span className="blank-cover-text">Choose a cover below</span>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Upload custom image option */}
           <div className="upload-section">
             <label htmlFor="image-upload" className="upload-label">
               <i className="fa-solid fa-upload"></i>
@@ -180,15 +170,14 @@ const CreateJournal = () => {
             />
           </div>
 
-          {/* Preset color options */}
           <div className="color-options">
             <p className="color-options-label">Or choose a preset:</p>
             <div className="color-circles">
               {coverOptions.map((cover) => (
                 <div
                   key={cover.name}
-                  className={`color-circle ${selectedCover.name === cover.name && !customImagePreview ? 'selected' : ''}`}
-                  style={{ backgroundColor: cover.color, border: cover.name === 'white' ? '2px solid #e5e7eb' : 'none' }}
+                  className={`color-circle ${selectedCover?.name === cover.name && !customImagePreview ? 'selected' : ''}`}
+                  style={{ backgroundColor: cover.color }}
                   onClick={() => handleCoverSelect(cover)}
                   title={`${cover.name} cover`}
                   role="button"
@@ -199,8 +188,8 @@ const CreateJournal = () => {
                     }
                   }}
                 >
-                  {selectedCover.name === cover.name && !customImagePreview && (
-                    <i className="fa-solid fa-check" style={{ color: cover.name === 'white' ? '#6b7280' : '#ffffff' }}></i>
+                  {selectedCover?.name === cover.name && !customImagePreview && (
+                    <i className="fa-solid fa-check"></i>
                   )}
                 </div>
               ))}
@@ -208,7 +197,6 @@ const CreateJournal = () => {
           </div>
         </div>
 
-        {/* Right: Form inputs */}
         <form className="journal-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="journal-name">Journal Name *</label>
