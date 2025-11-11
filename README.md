@@ -32,9 +32,13 @@ Users can create, name, and manage multiple distinct journals and add new blank 
 Allows users to upload a photo, add a text description, and attach a date/location to a page.
 [gif goes here]
 
-### Sticker & Doodle Toolkit (Custom)
+### ✅ Sticker & Doodle Toolkit (Custom)
 Users can select from a library of digital stickers and use a doodling tool to personalize their page design.
-[gif goes here]
+
+
+![demo](https://i.imgur.com/uQAxrnz.gif)
+
+https://imgur.com/a/Qq4cWlT
 
 ### Spotify Song Link (Custom)
 Users can link a Spotify song URL to a page to capture the mood, storing the song data in a one-to-one relationship.
