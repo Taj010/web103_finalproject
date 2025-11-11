@@ -1,0 +1,66 @@
+/* Header Section */
+.add-page-header {
+  background-color: #fee2bb; /* Header background color */
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e0d9c7;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+}
+
+.logo {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #3d2817; /* Dark brown */
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.username-btn {
+  background-color: #3d2817; /* Dark brown */
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.username-btn:hover {
+  background-color: #2d1f12;
+}
+
+.nav-arrow-btn {
+  background-color: #3d2817; /* Dark brown */
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.nav-arrow-btn:hover {
+  background-color: #2d1f12;
+}
+
+.arrow-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
