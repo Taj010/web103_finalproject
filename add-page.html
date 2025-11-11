@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Page - StickerStory</title>
+    <link rel="stylesheet" href="add-page.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">StickerStory</h1>
+            <div class="header-right">
+                <button class="username-btn">Username</button>
+                <button class="nav-arrow-btn" aria-label="Navigate">
+                    <span class="arrow-icon">→</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container with Three Sections -->
+    <div class="main-container">
+        <!-- Left Sidebar - Editor Tools -->
+        <aside class="editor-sidebar">
+            <!-- Page Color Section -->
+            <div class="editor-section">
+                <div class="section-header">
+                    <span class="star-icon">⭐</span>
+                    <h3 class="section-title">Page Color</h3>
+                </div>
+                <div class="color-swatches">
+                    <button class="color-swatch white selected" data-color="white" aria-label="White background">
+                        <span class="swatch-inner"></span>
+                    </button>
+                    <button class="color-swatch gray" data-color="gray" aria-label="Gray background">
+                        <span class="swatch-inner"></span>
+                    </button>
+                    <button class="color-swatch black" data-color="black" aria-label="Black background">
+                        <span class="swatch-inner"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stickers Section -->
+            <div class="editor-section expandable">
+                <div class="section-header clickable" data-section="stickers">
+                    <span class="star-icon">⭐</span>
+                    <h3 class="section-title">Stickers</h3>
+                    <span class="chevron-icon">▼</span>
+                </div>
+                <div class="section-content collapsed" id="stickers-content">
+                    <div class="stickers-grid" id="stickers-grid">
+                        <!-- Stickers will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doodles Section -->
+            <div class="editor-section expandable">
+                <div class="section-header clickable" data-section="doodles">
+                    <span class="star-icon">⭐</span>
+                    <h3 class="section-title">Doodles</h3>
+                    <span class="chevron-icon">▼</span>
+                </div>
+                <div class="section-content collapsed" id="doodles-content">
+                    <div class="doodle-controls">
+                        <button class="doodle-btn start-doodle-btn" id="start-doodle-btn">Start Doodling</button>
+                        <div class="doodle-options" id="doodle-options" style="display: none;">
+                            <div class="control-group">
+                                <label for="doodle-color">Color:</label>
+                                <input type="color" id="doodle-color" value="#000000" class="doodle-color-picker">
+                            </div>
+                            <div class="control-group">
+                                <label for="doodle-brush-size">Brush Size:</label>
+                                <input type="range" id="doodle-brush-size" min="1" max="20" value="5" class="doodle-brush-slider">
+                                <span class="brush-size-value" id="brush-size-value">5</span>
+                            </div>
+                            <div class="control-group button-group">
+                                <button class="doodle-btn clear-doodle-btn" id="clear-doodle-btn">Clear</button>
+                                <button class="doodle-btn done-doodle-btn" id="done-doodle-btn">Done</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Section -->
+            <div class="editor-section expandable">
+                <div class="section-header clickable" data-section="text">
+                    <span class="star-icon">⭐</span>
+                    <h3 class="section-title">Text</h3>
+                    <span class="chevron-icon">▼</span>
+                </div>
+                <div class="section-content collapsed" id="text-content">
+                    <div class="text-controls">
+                        <div class="control-group">
+                            <label for="text-input">Enter Text:</label>
+                            <textarea id="text-input" class="text-input" rows="3" placeholder="Type your text here..."></textarea>
+                        </div>
+                        <div class="control-group">
+                            <label for="text-size">Size:</label>
+                            <input type="range" id="text-size" min="12" max="72" value="24" class="text-size-slider">
+                            <span class="text-size-value" id="text-size-value">24</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="text-color">Color:</label>
+                            <input type="color" id="text-color" value="#000000" class="text-color-picker">
+                        </div>
+                        <button class="text-btn add-text-btn" id="add-text-btn">Add Text to Page</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Images Section -->
+            <div class="editor-section expandable">
+                <div class="section-header clickable" data-section="upload">
+                    <span class="star-icon">⭐</span>
+                    <h3 class="section-title">Upload Images</h3>
+                    <span class="chevron-icon">▼</span>
+                </div>
+                <div class="section-content collapsed" id="upload-content">
+                    <div class="upload-controls">
+                        <input type="file" id="image-input" accept="image/*" style="display: none;">
+                        <div class="upload-area" id="upload-area">
+                            <div class="upload-icon">📷</div>
+                            <p class="upload-text">Click to upload or drag and drop</p>
+                            <p class="upload-hint">PNG, JPG, GIF up to 10MB</p>
+                        </div>
+                        <div class="upload-preview" id="upload-preview" style="display: none;">
+                            <img id="preview-image" src="" alt="Preview">
+                            <button class="upload-btn remove-image-btn" id="remove-image-btn">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Section - Page Canvas -->
+        <main class="page-section">
+            <h2 class="page-title">Add Page</h2>
+            <div class="page-canvas">
+                <!-- Page content will be rendered here -->
+                <canvas id="doodle-canvas" class="doodle-canvas"></canvas>
+            </div>
+        </main>
+
+        <!-- Right Sidebar - Action Buttons -->
+        <aside class="action-buttons">
+            <!-- Action buttons will be added in later steps -->
+        </aside>
+    </div>
+
+    <!-- Footer/Bottom Navigation -->
+    <footer class="footer">
+        <button class="next-btn">Next</button>
+    </footer>
+
+    <script src="add-page.js"></script>
+</body>
+</html>
+
