@@ -24,9 +24,12 @@ Backend: Express, Node.js, PostgreSQL
 
 ## Features
 
-### Journal & Page Creation (Baseline)
+### ✅ Journal & Page Creation (Baseline)
 Users can create, name, and manage multiple distinct journals and add new blank pages to any journal.
-[gif goes here]
+
+![demo](https://imgur.com/a/jx9wb8L)
+
+https://imgur.com/a/jx9wb8L
 
 ### Multimedia Page Editor (Baseline)
 Allows users to upload a photo, add a text description, and attach a date/location to a page.
