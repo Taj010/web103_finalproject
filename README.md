@@ -27,7 +27,7 @@ Backend: Express, Node.js, PostgreSQL
 ### ✅ Journal & Page Creation (Baseline)
 Users can create, name, and manage multiple distinct journals and add new blank pages to any journal.
 
-![demo](https://i.imgur.com/a/jx9wb8L.gif)
+![demo](https://i.imgur.com/PgJRgdl.gif)
 
 https://imgur.com/a/jx9wb8L
 
