@@ -1,11 +1,12 @@
 // src/pages/AllJournals.jsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/AllJournals.css';
 import axios from 'axios';
 
 const AllJournals = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [journals, setJournals] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,17 +14,15 @@ const AllJournals = () => {
   const [filterLocation, setFilterLocation] = useState('');
   const [filterTags, setFilterTags] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openMenuId, setOpenMenuId] = useState(null); // Track which menu is open
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   const locations = ['New York', 'Los Angeles', 'Chicago', 'Other'];
   const tags = ['Travel', 'Work', 'Personal', 'School'];
 
-  // Fetch journals on component mount
   useEffect(() => {
     fetchJournals();
-  }, []);
+  }, [location]);
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest('.menu-container')) {
@@ -58,7 +57,7 @@ const AllJournals = () => {
     .filter(j => filterTags.length > 0 ? filterTags.every(tag => j.tags?.includes(tag)) : true);
 
   const handleAddPage = (e, journalId) => {
-    e.stopPropagation(); // Prevent card click
+    e.stopPropagation();
     navigate(`/journals/${journalId}/pages/add`);
   };
 
@@ -67,7 +66,7 @@ const AllJournals = () => {
   };
 
   const toggleMenu = (e, journalId) => {
-    e.stopPropagation(); // Prevent card click
+    e.stopPropagation();
     setOpenMenuId(openMenuId === journalId ? null : journalId);
   };
 
@@ -88,7 +87,6 @@ const AllJournals = () => {
         withCredentials: true,
       });
       
-      // Remove journal from state
       setJournals(journals.filter(j => j.id !== journalId));
       setOpenMenuId(null);
     } catch (err) {
@@ -120,24 +118,27 @@ const AllJournals = () => {
 
   return (
     <div className="all-journals-page">
-      <div className="header">
-        <h1>All Journals</h1>
+      {/* Centered Title */}
+      <h1 className="page-title">All Journals</h1>
+
+      {/* Search and Create Button Row */}
+      <div className="search-create-row">
+        <div className="search-container">
+          <i className="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            placeholder="Search journals..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+        </div>
         <button className="btn-filled" onClick={handleCreateJournal}>
           <i className="fa-solid fa-plus"></i>
           Create New Journal
         </button>
       </div>
 
-      <div className="search-container">
-        <i className="fa-solid fa-magnifying-glass search-icon"></i>
-        <input
-          type="text"
-          placeholder="Search journals..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
-      </div>
-
+      {/* Filters */}
       <div className="filters">
         <span className="filters-label">Filters:</span>
 
@@ -174,6 +175,7 @@ const AllJournals = () => {
         </div>
       </div>
 
+      {/* Journal Cards or Empty State */}
       {filteredJournals.length === 0 ? (
         <div className="empty-state">
           <i className="fa-solid fa-book-open"></i>
@@ -194,18 +196,16 @@ const AllJournals = () => {
         <div className="journal-cards">
           {filteredJournals.map(journal => (
             <div key={journal.id} className="journal-card" onClick={() => handleViewJournal(journal.id)}>
-              {/* Cover Image */}
               <div className="journal-cover">
                 {journal.coverImage ? (
                   <img src={journal.coverImage} alt={`${journal.name} cover`} />
                 ) : (
                   <div
                     className="color-cover"
-                    style={{ backgroundColor: journal.coverColor || '#8b5cf6' }}
+                    style={{ backgroundColor: journal.coverColor || '#493000' }}
                   ></div>
                 )}
                 
-                {/* Three Dots Menu */}
                 <div className="menu-container">
                   <button 
                     className="menu-button"
@@ -230,7 +230,6 @@ const AllJournals = () => {
                 </div>
               </div>
 
-              {/* Journal Info */}
               <div className="journal-info">
                 <div className="journal-header">
                   <h2>{journal.name}</h2>

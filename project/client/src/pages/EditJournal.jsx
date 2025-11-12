@@ -1,10 +1,9 @@
 // src/pages/EditJournal.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import '../css/CreateJournal.css'; // Reuse CreateJournal styles
+import '../css/CreateJournal.css';
 import axios from 'axios';
 
-// Cover options - same as CreateJournal
 const coverOptions = [
   { color: '#FFB6D9', name: 'pink', image: '/covers/pinkcover.jpg' },
   { color: '#9ED9CC', name: 'green', image: '/covers/greencover.jpg' },
@@ -15,42 +14,52 @@ const coverOptions = [
 
 const EditJournal = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get journal ID from URL
+  const { id } = useParams();
 
   const [journalName, setJournalName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCover, setSelectedCover] = useState(null);
-  const [currentCoverImage, setCurrentCoverImage] = useState(null); // Store the existing cover
+  const [currentCoverImage, setCurrentCoverImage] = useState(null);
   const [customImage, setCustomImage] = useState(null);
   const [customImagePreview, setCustomImagePreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [originalData, setOriginalData] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Fetch journal data on mount
   useEffect(() => {
+    console.log('🔍 EditJournal mounted');
+    console.log('📋 Journal ID from URL:', id);
+    console.log('📋 Journal ID type:', typeof id);
     fetchJournal();
   }, [id]);
 
   const fetchJournal = async () => {
     try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('📡 Fetching journal:', id);
+      console.log('📡 Full URL:', `http://localhost:3000/api/journals/${id}`);
+      
       const response = await axios.get(`http://localhost:3000/api/journals/${id}`, {
         withCredentials: true,
       });
+      
+      console.log('✅ Journal fetched successfully:', response.data);
       
       const journal = response.data;
       setJournalName(journal.name);
       setDescription(journal.description || '');
       setOriginalData(journal);
       
-      // Determine which type of cover the journal has
+      // Determine cover type
       if (journal.coverImage) {
-        // Check if it's a preset cover
         const preset = coverOptions.find(c => c.image === journal.coverImage);
         if (preset) {
-          // It's a preset cover
+          console.log('🎨 Preset cover found:', preset.name);
           setSelectedCover(preset);
         } else {
-          // It's a custom uploaded image
+          console.log('🖼️ Custom cover image:', journal.coverImage);
           setCurrentCoverImage(journal.coverImage);
           setCustomImagePreview(journal.coverImage);
         }
@@ -58,13 +67,23 @@ const EditJournal = () => {
       
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching journal:', err);
+      console.error('❌ Error fetching journal:', err);
+      console.error('❌ Error response:', err.response?.data);
+      console.error('❌ Error status:', err.response?.status);
+      
+      setError(err.response?.data?.message || 'Failed to load journal');
+      
       if (err.response?.status === 401) {
+        alert('Please log in to edit journals.');
         navigate('/login');
       } else if (err.response?.status === 404) {
-        alert('Journal not found');
-        navigate('/journals');
+        console.error('❌ Journal not found. ID:', id);
+        setTimeout(() => {
+          alert('Journal not found. Redirecting to journals list.');
+          navigate('/journals');
+        }, 100);
       }
+      setLoading(false);
     }
   };
 
@@ -106,7 +125,7 @@ const EditJournal = () => {
     
     if (journalName.trim() !== originalData.name) return true;
     if (description.trim() !== (originalData.description || '')) return true;
-    if (customImage) return true; // New image uploaded
+    if (customImage) return true;
     if (selectedCover && selectedCover.image !== originalData.coverImage) return true;
     
     return false;
@@ -125,7 +144,8 @@ const EditJournal = () => {
       return;
     }
 
-    // If user uploaded a new custom image
+    console.log('💾 Saving changes to journal:', id);
+
     if (customImage) {
       const formData = new FormData();
       formData.append('name', journalName.trim());
@@ -136,20 +156,17 @@ const EditJournal = () => {
 
       try {
         const response = await axios.put(`http://localhost:3000/api/journals/${id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+          headers: { 'Content-Type': 'multipart/form-data' },
           withCredentials: true,
         });
         
-        console.log('Journal updated:', response.data);
+        console.log('✅ Journal updated:', response.data);
         navigate('/journals');
       } catch (err) {
-        console.error('Error updating journal:', err);
+        console.error('❌ Error updating journal:', err);
         alert('Failed to update journal. Please try again.');
       }
     } else {
-      // Use preset cover or keep existing custom image
       const journalData = {
         name: journalName.trim(),
         description: description.trim(),
@@ -158,18 +175,18 @@ const EditJournal = () => {
         coverName: selectedCover?.name || originalData.coverName,
       };
 
+      console.log('📤 Sending update:', journalData);
+
       try {
         const response = await axios.put(`http://localhost:3000/api/journals/${id}`, journalData, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         });
         
-        console.log('Journal updated:', response.data);
+        console.log('✅ Journal updated:', response.data);
         navigate('/journals');
       } catch (err) {
-        console.error('Error updating journal:', err);
+        console.error('❌ Error updating journal:', err);
         alert('Failed to update journal. Please try again.');
       }
     }
@@ -194,35 +211,35 @@ const EditJournal = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="create-journal-page">
+        <div style={{ textAlign: 'center', padding: '4rem' }}>
+          <i className="fa-solid fa-circle-exclamation" style={{ fontSize: '4rem', color: '#ef4444', marginBottom: '1rem' }}></i>
+          <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Error Loading Journal</h2>
+          <p style={{ color: '#6b7280', marginBottom: '2rem' }}>{error}</p>
+          <button className="btn-filled" onClick={() => navigate('/journals')}>
+            Back to Journals
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="create-journal-page">
       <i className="fa-solid fa-arrow-left back-button" onClick={handleBack} title="Back to Journals"></i>
       <h1>Edit Journal</h1>
 
       <div className="create-journal-container">
-        {/* Left: Cover preview */}
         <div className="cover-preview-section">
           <div className="cover-preview">
             {customImagePreview ? (
-              // Show custom uploaded image (new or existing)
-              <img 
-                src={customImagePreview} 
-                alt="Journal cover"
-                className="cover-image"
-              />
+              <img src={customImagePreview} alt="Journal cover" className="cover-image" />
             ) : selectedCover?.image ? (
-              // Show selected preset cover
-              <img 
-                src={selectedCover.image} 
-                alt={`${selectedCover.name} journal cover`}
-                className="cover-image"
-              />
+              <img src={selectedCover.image} alt={`${selectedCover.name} journal cover`} className="cover-image" />
             ) : (
-              // Fallback (shouldn't happen in edit mode)
-              <div 
-                className="color-cover" 
-                style={{ backgroundColor: originalData?.coverColor || '#FFFFFF' }}
-              >
+              <div className="color-cover" style={{ backgroundColor: originalData?.coverColor || '#FFFFFF' }}>
                 <div className="blank-cover-content">
                   <i className="fa-solid fa-image blank-cover-icon"></i>
                   <span className="blank-cover-text">Choose a cover below</span>
@@ -231,7 +248,6 @@ const EditJournal = () => {
             )}
           </div>
 
-          {/* Upload custom image option */}
           <div className="upload-section">
             <label htmlFor="image-upload" className="upload-label">
               <i className="fa-solid fa-upload"></i>
@@ -246,7 +262,6 @@ const EditJournal = () => {
             />
           </div>
 
-          {/* Preset color options */}
           <div className="color-options">
             <p className="color-options-label">Or choose a preset:</p>
             <div className="color-circles">
@@ -259,11 +274,6 @@ const EditJournal = () => {
                   title={`${cover.name} cover`}
                   role="button"
                   tabIndex={0}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      handleCoverSelect(cover);
-                    }
-                  }}
                 >
                   {selectedCover?.name === cover.name && (
                     <i className="fa-solid fa-check"></i>
@@ -274,7 +284,6 @@ const EditJournal = () => {
           </div>
         </div>
 
-        {/* Right: Form inputs */}
         <form className="journal-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="journal-name">Journal Name *</label>
@@ -303,7 +312,6 @@ const EditJournal = () => {
             <span className="char-count">{description.length}/200</span>
           </div>
 
-          {/* Show changes indicator */}
           {hasChanges() && (
             <div style={{
               padding: '0.75rem 1rem',

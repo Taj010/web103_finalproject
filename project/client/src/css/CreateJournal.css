@@ -22,8 +22,7 @@
 }
 
 .back-button:hover {
-  color: #8b5cf6;
-  background-color: #f3f4f6;
+  color: #493000;
   transform: translateX(-4px);
 }
 
@@ -33,6 +32,7 @@
   color: #1f2937;
   margin: 3rem 0 2.5rem 0;
   font-weight: 700;
+  font-size: 50px;
 }
 
 /* Main Container */
@@ -114,8 +114,8 @@
 
 .upload-label:hover {
   background-color: #f3f4f6;
-  border-color: #8b5cf6;
-  color: #8b5cf6;
+  border-color: #493000;
+  color: #493000;
 }
 
 .upload-label i {
@@ -215,7 +215,7 @@
 
 .form-group input[type="text"]:focus,
 .form-group textarea:focus {
-  border-color: #8b5cf6;
+  border-color: #493000;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
@@ -264,22 +264,9 @@
 }
 
 .btn-outline:hover {
-  border-color: #8b5cf6;
-  color: #8b5cf6;
+  border-color: #493000;
+  color: #493000;
   background-color: #f9fafb;
-}
-
-.btn-filled {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
-.btn-filled:hover {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
-  transform: translateY(-2px);
 }
 
 .btn-filled:active,
@@ -390,11 +377,11 @@
 
 /* Accessibility */
 .color-circle:focus-visible {
-  outline: 3px solid #8b5cf6;
+  outline: 3px solid #493000;
   outline-offset: 2px;
 }
 
 button:focus-visible {
-  outline: 3px solid #8b5cf6;
+  outline: 3px solid #493000;
   outline-offset: 2px;
 }
