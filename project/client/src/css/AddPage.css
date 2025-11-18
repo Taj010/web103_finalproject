@@ -86,18 +86,19 @@
   padding: 0;
 }
 
-/* Page Color Section */
-.color-swatches {
+/* Page Background Section */
+.page-background-swatches {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   align-items: center;
 }
 
-.color-swatch {
+.page-background-swatch {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  border: 2px solid #333;
+  border-radius: 8px;
+  border: 2px solid #e0d9c7;
   cursor: pointer;
   padding: 0;
   background: transparent;
@@ -106,56 +107,46 @@
   justify-content: center;
   transition: all 0.2s;
   position: relative;
+  overflow: hidden;
 }
 
-.color-swatch:hover {
+.page-background-swatch:hover {
   transform: scale(1.1);
-}
-
-.color-swatch.selected {
-  border-width: 3px;
   border-color: #3d2817;
 }
 
-.swatch-inner {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+.page-background-swatch.selected {
+  border-width: 3px;
+  border-color: #3d2817;
+  box-shadow: 0 0 0 2px rgba(61, 40, 23, 0.2);
+}
+
+.background-swatch-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
-}
-
-.color-swatch.white .swatch-inner {
-  background-color: white;
-  border: 1px solid #ddd;
-}
-
-.color-swatch.gray .swatch-inner {
-  background-color: #808080;
-}
-
-.color-swatch.black .swatch-inner {
-  background-color: #000000;
 }
 
 /* Step 6: Stickers Section */
 .stickers-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
   padding: 0.5rem 0;
 }
 
 .sticker-item {
   aspect-ratio: 1;
   border: 2px solid #e0d9c7;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: #fafafa;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  padding: 0.5rem;
+  padding: 0.25rem;
   overflow: hidden;
 }
 
@@ -166,7 +157,14 @@
 }
 
 .sticker-item .sticker-emoji {
-  font-size: 2rem;
+  font-size: 1.5rem;
+}
+
+.sticker-item .sticker-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 /* Stickers on Canvas */
@@ -201,6 +199,12 @@
 .canvas-sticker-emoji {
   pointer-events: none;
   display: block;
+}
+
+.canvas-sticker-image {
+  pointer-events: none;
+  display: block;
+  user-select: none;
 }
 
 /* Step 7: Doodles Section */
@@ -582,13 +586,6 @@
   line-height: 1;
 }
 
-.music-btn {
-  /* Music button specific styles if needed */
-}
-
-.chat-btn {
-  /* Chat bubble button specific styles if needed */
-}
 
 /* Footer Section */
 .add-page-footer {
@@ -613,6 +610,309 @@
 
 .next-btn:hover {
   background-color: #2d1f12;
+}
+
+/* Prompt Banner */
+.prompt-banner {
+  width: 100%;
+  max-width: 800px;
+  background-color: #fff;
+  border: 2px solid #3d2817;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.prompt-banner-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.prompt-banner-text {
+  font-size: 1.1rem;
+  color: #3d2817;
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Spotify Banner */
+.spotify-banner {
+  width: 100%;
+  max-width: 800px;
+  background-color: #f7f4ef;
+  border: 2px solid #3d2817;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.spotify-banner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.spotify-banner-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.spotify-banner .spotify-remove-btn {
+  background: transparent;
+  border: 1px solid #3d2817;
+  color: #3d2817;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.spotify-banner .spotify-remove-btn:hover {
+  background-color: #3d2817;
+  color: white;
+}
+
+/* Prompt Modal */
+.prompt-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 999;
+}
+
+.prompt-modal {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: center;
+}
+
+.prompt-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #3d2817;
+  line-height: 1;
+  padding: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.prompt-close-btn:hover {
+  background-color: rgba(61, 40, 23, 0.1);
+}
+
+.prompt-modal h3 {
+  font-size: 1.5rem;
+  color: #3d2817;
+  margin: 0 0 1rem 0;
+}
+
+.prompt-text {
+  font-size: 1.1rem;
+  color: #3d2817;
+  margin: 1rem 0 1.5rem;
+  font-weight: 500;
+  line-height: 1.6;
+  min-height: 3rem;
+}
+
+.prompt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.prompt-action-btn {
+  background-color: #3d2817;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.prompt-action-btn.secondary {
+  background-color: transparent;
+  color: #3d2817;
+  border: 2px solid #3d2817;
+}
+
+.prompt-action-btn:hover {
+  background-color: #2d1f12;
+}
+
+.prompt-action-btn.secondary:hover {
+  background-color: rgba(61, 40, 23, 0.05);
+}
+
+/* Spotify Modal */
+.spotify-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 999;
+}
+
+.spotify-modal {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.spotify-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #3d2817;
+  line-height: 1;
+  padding: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.spotify-close-btn:hover {
+  background-color: rgba(61, 40, 23, 0.1);
+}
+
+.spotify-modal h3 {
+  font-size: 1.5rem;
+  color: #3d2817;
+  margin: 0 0 1.5rem 0;
+}
+
+.spotify-input-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #3d2817;
+  margin-bottom: 0.5rem;
+}
+
+.spotify-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0d9c7;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+.spotify-input:focus {
+  outline: none;
+  border-color: #3d2817;
+}
+
+.spotify-error {
+  color: #b3261e;
+  font-size: 0.875rem;
+  margin: -0.75rem 0 1rem 0;
+}
+
+.spotify-preview-area {
+  margin: 1.5rem 0;
+  min-height: 152px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f7f4ef;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.spotify-preview-placeholder {
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
+.spotify-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.spotify-save-btn {
+  flex: 1;
+  background-color: #3d2817;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.spotify-save-btn:hover {
+  background-color: #2d1f12;
+}
+
+.spotify-remove-btn.secondary {
+  flex: 1;
+  background-color: transparent;
+  color: #3d2817;
+  border: 2px solid #3d2817;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.spotify-remove-btn.secondary:hover {
+  background-color: rgba(61, 40, 23, 0.05);
 }
 
 /* Responsive adjustments */

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import EditorSidebar from '../components/EditorSidebar';
+import prompts from '../data/prompts';
 import '../css/AddPage.css';
 
 const AddPage = () => {
@@ -8,24 +9,52 @@ const AddPage = () => {
   const { journalId } = useParams();
 
   // Step 6: Sticker Library
-  const stickerLibrary = [
-    { id: 1, emoji: '⭐', name: 'Star' },
-    { id: 2, emoji: '❤️', name: 'Heart' },
-    { id: 3, emoji: '🎉', name: 'Party' },
-    { id: 4, emoji: '🌟', name: 'Sparkle' },
-    { id: 5, emoji: '💫', name: 'Dizzy' },
-    { id: 6, emoji: '✨', name: 'Sparkles' },
-    { id: 7, emoji: '🎈', name: 'Balloon' },
-    { id: 8, emoji: '🎊', name: 'Confetti' },
-    { id: 9, emoji: '💝', name: 'Gift Heart' },
-    { id: 10, emoji: '🎁', name: 'Gift' },
-    { id: 11, emoji: '🌸', name: 'Cherry Blossom' },
-    { id: 12, emoji: '🌺', name: 'Hibiscus' }
+  const emojiStickers = [
+    { id: 1, emoji: '⭐', name: 'Star', type: 'emoji' },
+    { id: 2, emoji: '❤️', name: 'Heart', type: 'emoji' },
+    { id: 3, emoji: '🎉', name: 'Party', type: 'emoji' },
+    { id: 4, emoji: '🌟', name: 'Sparkle', type: 'emoji' },
+    { id: 5, emoji: '💫', name: 'Dizzy', type: 'emoji' },
+    { id: 6, emoji: '✨', name: 'Sparkles', type: 'emoji' },
+    { id: 7, emoji: '🎈', name: 'Balloon', type: 'emoji' },
+    { id: 8, emoji: '🎊', name: 'Confetti', type: 'emoji' },
+    { id: 9, emoji: '💝', name: 'Gift Heart', type: 'emoji' },
+    { id: 10, emoji: '🎁', name: 'Gift', type: 'emoji' },
+    { id: 11, emoji: '🌸', name: 'Cherry Blossom', type: 'emoji' },
+    { id: 12, emoji: '🌺', name: 'Hibiscus', type: 'emoji' }
+  ];
+
+  // Image Stickers from public/stickers folder
+  const imageStickers = [
+    { id: 101, image: '/stickers/circle.jpg', name: 'Circle', type: 'image' },
+    { id: 102, image: '/stickers/collage.jpg', name: 'Collage', type: 'image' },
+    { id: 103, image: '/stickers/flowers.jpg', name: 'Flowers', type: 'image' },
+    { id: 104, image: '/stickers/hearts.jpg', name: 'Hearts', type: 'image' },
+    { id: 105, image: '/stickers/logo.png', name: 'Logo', type: 'image' },
+    { id: 106, image: '/stickers/Meow.jpg', name: 'Meow', type: 'image' },
+    { id: 107, image: '/stickers/moon.jpg', name: 'Moon', type: 'image' },
+    { id: 108, image: '/stickers/stars.jpg', name: 'Stars', type: 'image' }
+  ];
+
+  // Combined sticker library
+  const stickerLibrary = [...emojiStickers, ...imageStickers];
+
+  // Page Background Options
+  const pageBackgrounds = [
+    { id: 'white', name: 'White', image: '/pages/white.jpg' },
+    { id: 'black', name: 'Black', image: '/pages/black.jpg' },
+    { id: 'dotted', name: 'Dotted', image: '/pages/dotted.jpg' },
+    { id: 'lines_white', name: 'Lined', image: '/pages/lines_white.jpg' },
+    { id: 'notebook_lines', name: 'Notebook', image: '/pages/notebook_lines.jpg' },
+    { id: 'pink', name: 'Pink', image: '/pages/pink.jpg' },
+    { id: 'square', name: 'Grid', image: '/pages/square.jpg' },
+    { id: 'note', name: 'Note', image: '/pages/note.jpg' }
   ];
 
   // Step 3: State Management
   const [pageData, setPageData] = useState({
     pageColor: 'white',
+    pageBackgroundImage: null,
     images: [],
     stickers: [],
     textElements: [],
@@ -55,9 +84,21 @@ const AddPage = () => {
   const [textSize, setTextSize] = useState(24);
   const [textColor, setTextColor] = useState('#000000');
 
-  // Helper function to update page color
-  const updatePageColor = (color) => {
-    setPageData(prev => ({ ...prev, pageColor: color }));
+  // Prompt and Spotify Modal State
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  const [currentPrompt, setCurrentPrompt] = useState(null);
+  const [showSpotifyModal, setShowSpotifyModal] = useState(false);
+  const [spotifyInput, setSpotifyInput] = useState('');
+  const [spotifyError, setSpotifyError] = useState('');
+  const [spotifyPreviewId, setSpotifyPreviewId] = useState(null);
+
+  // Helper function to update page background
+  const updatePageBackground = (backgroundId, backgroundImage = null) => {
+    setPageData(prev => ({ 
+      ...prev, 
+      pageColor: backgroundId,
+      pageBackgroundImage: backgroundImage 
+    }));
   };
 
   // Helper function to toggle sections
@@ -68,17 +109,61 @@ const AddPage = () => {
     }));
   };
 
-  const getCanvasBackgroundColor = () => {
+  const getCanvasBackgroundStyle = () => {
+    if (pageData.pageBackgroundImage) {
+      return {
+        backgroundImage: `url(${pageData.pageBackgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      };
+    }
     const colorMap = {
       'white': '#ffffff',
       'gray': '#808080',
       'black': '#000000'
     };
-    return colorMap[pageData.pageColor] || '#ffffff';
+    return {
+      backgroundColor: colorMap[pageData.pageColor] || '#ffffff'
+    };
   };
 
   const getCanvasTextColor = () => {
+    // Use black text for light backgrounds, white for dark
+    if (pageData.pageBackgroundImage) {
+      // For images, default to black text (can be adjusted per image if needed)
+      const darkBackgrounds = ['black.jpg'];
+      const isDark = darkBackgrounds.some(bg => pageData.pageBackgroundImage.includes(bg));
+      return isDark ? '#ffffff' : '#000000';
+    }
     return pageData.pageColor === 'black' ? '#ffffff' : '#000000';
+  };
+
+  const getRandomPrompt = () => {
+    if (!prompts.length) return null;
+    const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+    setCurrentPrompt(randomPrompt);
+    return randomPrompt;
+  };
+
+  const extractSpotifyTrackId = (url) => {
+    if (!url) return null;
+    const trackMatch = url.match(/spotify\.com\/track\/([a-zA-Z0-9]+)/);
+    if (trackMatch && trackMatch[1]) return trackMatch[1];
+    const uriMatch = url.match(/spotify:track:([a-zA-Z0-9]+)/);
+    if (uriMatch && uriMatch[1]) return uriMatch[1];
+    return null;
+  };
+
+  const isValidSpotifyUrl = (url) => {
+    if (!url) return false;
+    return url.includes('spotify.com') || url.startsWith('spotify:track:');
+  };
+
+  const getSpotifyEmbedUrl = (url) => {
+    const trackId = extractSpotifyTrackId(url);
+    if (!trackId) return null;
+    return `https://open.spotify.com/embed/track/${trackId}?utm_source=generator`;
   };
 
   // Step 6: Sticker Functions
@@ -91,7 +176,9 @@ const AddPage = () => {
     const stickerData = {
       id: stickerId,
       stickerId: sticker.id,
-      emoji: sticker.emoji,
+      type: sticker.type || 'emoji',
+      emoji: sticker.emoji || null,
+      image: sticker.image || null,
       name: sticker.name,
       x: centerX,
       y: centerY,
@@ -231,13 +318,60 @@ const AddPage = () => {
 
   // Step 11: Right Sidebar Action Button Handlers
   const handleMusicClick = () => {
-    // TODO: Open Spotify URL input (modal or expandable)
-    alert('Music button clicked - Spotify integration coming soon!');
+    setSpotifyError('');
+    const existingUrl = pageData.spotifyUrl || '';
+    setSpotifyInput(existingUrl);
+    setSpotifyPreviewId(extractSpotifyTrackId(existingUrl));
+    setShowSpotifyModal(true);
   };
 
   const handleChatBubbleClick = () => {
-    // TODO: Open prompt generator (modal or expandable) 
-    alert('Chat bubble clicked - Prompt generator coming soon!');
+    setShowPromptModal(true);
+    getRandomPrompt();
+  };
+
+  const handleClosePromptModal = () => {
+    setShowPromptModal(false);
+  };
+
+  const handleGetNewPrompt = () => {
+    getRandomPrompt();
+  };
+
+  const handleUsePrompt = () => {
+    if (!currentPrompt) {
+      getRandomPrompt();
+    }
+    setPageData(prev => ({ ...prev, prompt: currentPrompt || prompts[0] || '' }));
+    setShowPromptModal(false);
+  };
+
+  const handleSpotifyInputChange = (value) => {
+    setSpotifyInput(value);
+    setSpotifyError('');
+    const trackId = extractSpotifyTrackId(value);
+    setSpotifyPreviewId(trackId);
+  };
+
+  const handleSaveSpotifyUrl = () => {
+    if (!spotifyInput.trim()) {
+      setSpotifyError('Please paste a Spotify track link.');
+      return;
+    }
+    if (!isValidSpotifyUrl(spotifyInput) || !extractSpotifyTrackId(spotifyInput)) {
+      setSpotifyError('Enter a valid Spotify track URL.');
+      return;
+    }
+    setPageData(prev => ({ ...prev, spotifyUrl: spotifyInput.trim() }));
+    setShowSpotifyModal(false);
+  };
+
+  const handleClearSpotifyUrl = () => {
+    setSpotifyInput('');
+    setSpotifyPreviewId(null);
+    setSpotifyError('');
+    setPageData(prev => ({ ...prev, spotifyUrl: null }));
+    setShowSpotifyModal(false);
   };
 
   // Step 9: Image Upload Functions
@@ -468,7 +602,8 @@ const AddPage = () => {
         {/* Left Sidebar - Editor Tools */}
         <EditorSidebar
           pageData={pageData}
-          updatePageColor={updatePageColor}
+          updatePageBackground={updatePageBackground}
+          pageBackgrounds={pageBackgrounds}
           stickerLibrary={stickerLibrary}
           handleStickerClick={handleStickerClick}
           expandedSections={expandedSections}
@@ -496,11 +631,40 @@ const AddPage = () => {
         {/* Step 10: Page Canvas Rendering System */}
         <main className="page-section">
           <h2 className="page-title">Add Page</h2>
+          {pageData.prompt && (
+            <div className="prompt-banner" role="status">
+              <span className="prompt-banner-label">Prompt</span>
+              <p className="prompt-banner-text">{pageData.prompt}</p>
+            </div>
+          )}
+          {getSpotifyEmbedUrl(pageData.spotifyUrl) && (
+            <div className="spotify-banner" role="region" aria-label="Selected Spotify track">
+              <div className="spotify-banner-header">
+                <span className="spotify-banner-label">Spotify track</span>
+                <button
+                  type="button"
+                  className="spotify-remove-btn"
+                  onClick={handleClearSpotifyUrl}
+                >
+                  Remove
+                </button>
+              </div>
+              <iframe
+                title="Spotify song preview"
+                src={getSpotifyEmbedUrl(pageData.spotifyUrl)}
+                width="100%"
+                height="152"
+                frameBorder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+              />
+            </div>
+          )}
           <div
             className="page-canvas"
             ref={pageCanvasRef}
             style={{
-              backgroundColor: getCanvasBackgroundColor(), 
+              ...getCanvasBackgroundStyle(),
               color: getCanvasTextColor()
             }}
           >
@@ -583,9 +747,18 @@ const AddPage = () => {
                 className="canvas-sticker"
                 onPositionChange={(newX, newY) => updateStickerPosition(sticker.id, newX, newY)}
               >
-                <span className="canvas-sticker-emoji" style={{ fontSize: '3rem' }}>
-                  {sticker.emoji}
-                </span>
+                {sticker.type === 'image' && sticker.image ? (
+                  <img 
+                    src={sticker.image} 
+                    alt={sticker.name}
+                    className="canvas-sticker-image"
+                    style={{ maxWidth: '80px', maxHeight: '80px', objectFit: 'contain' }}
+                  />
+                ) : (
+                  <span className="canvas-sticker-emoji" style={{ fontSize: '3rem' }}>
+                    {sticker.emoji}
+                  </span>
+                )}
               </DraggableElement>
             ))}
 
@@ -635,6 +808,97 @@ const AddPage = () => {
           </button>
         </aside>
       </div>
+
+      {showPromptModal && (
+        <div
+          className="prompt-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="promptModalTitle"
+        >
+          <div className="prompt-modal">
+            <button
+              className="prompt-close-btn"
+              onClick={handleClosePromptModal}
+              aria-label="Close prompt generator"
+            >
+              ×
+            </button>
+            <h3 id="promptModalTitle">Need a memory prompt?</h3>
+            <p className="prompt-text">
+              {currentPrompt || 'Click the button to get inspired!'}
+            </p>
+            <div className="prompt-actions">
+              <button className="prompt-action-btn" onClick={handleGetNewPrompt}>
+                Get New Prompt
+              </button>
+              <button
+                className="prompt-action-btn secondary"
+                onClick={handleUsePrompt}
+              >
+                Use Prompt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSpotifyModal && (
+        <div
+          className="spotify-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="spotifyModalTitle"
+        >
+          <div className="spotify-modal">
+            <button
+              className="spotify-close-btn"
+              onClick={() => setShowSpotifyModal(false)}
+              aria-label="Close Spotify modal"
+            >
+              ×
+            </button>
+            <h3 id="spotifyModalTitle">Link a Spotify song</h3>
+            <label htmlFor="spotifyUrlInput" className="spotify-input-label">
+              Spotify URL
+            </label>
+            <input
+              id="spotifyUrlInput"
+              type="text"
+              className="spotify-input"
+              placeholder="https://open.spotify.com/track/..."
+              value={spotifyInput}
+              onChange={(e) => handleSpotifyInputChange(e.target.value)}
+            />
+            {spotifyError && <p className="spotify-error">{spotifyError}</p>}
+            <div className="spotify-preview-area">
+              {spotifyPreviewId ? (
+                <iframe
+                  title="Spotify preview"
+                  src={`https://open.spotify.com/embed/track/${spotifyPreviewId}?utm_source=generator`}
+                  width="100%"
+                  height="152"
+                  frameBorder="0"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                />
+              ) : (
+                <p className="spotify-preview-placeholder">
+                  Paste a Spotify track link to see a preview.
+                </p>
+              )}
+            </div>
+            <div className="spotify-modal-actions">
+              <button className="spotify-save-btn" onClick={handleSaveSpotifyUrl}>
+                Save Song
+              </button>
+              <button className="spotify-remove-btn secondary" onClick={handleClearSpotifyUrl}>
+                Remove Song
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer/Bottom Navigation */}
       <footer className="add-page-footer">

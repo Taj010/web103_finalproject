@@ -3,7 +3,8 @@ import '../css/AddPage.css';
 
 const EditorSidebar = ({
   pageData,
-  updatePageColor,
+  updatePageBackground,
+  pageBackgrounds,
   stickerLibrary,
   handleStickerClick,
   expandedSections,
@@ -28,34 +29,32 @@ const EditorSidebar = ({
 }) => {
   return (
     <aside className="editor-sidebar">
-      {/* Step 4: Page Color Section */}
+      {/* Step 4: Page Background Section */}
       <div className="editor-section">
         <div className="section-header">
           <span className="star-icon">⭐</span>
-          <h3 className="section-title">Page Color</h3>
+          <h3 className="section-title">Page Background</h3>
         </div>
-        <div className="color-swatches">
-          <button
-            className={`color-swatch white ${pageData.pageColor === 'white' ? 'selected' : ''}`}
-            onClick={() => updatePageColor('white')}
-            aria-label="White background"
-          >
-            <span className="swatch-inner"></span>
-          </button>
-          <button
-            className={`color-swatch gray ${pageData.pageColor === 'gray' ? 'selected' : ''}`}
-            onClick={() => updatePageColor('gray')}
-            aria-label="Gray background"
-          >
-            <span className="swatch-inner"></span>
-          </button>
-          <button
-            className={`color-swatch black ${pageData.pageColor === 'black' ? 'selected' : ''}`}
-            onClick={() => updatePageColor('black')}
-            aria-label="Black background"
-          >
-            <span className="swatch-inner"></span>
-          </button>
+        <div className="page-background-swatches">
+          {pageBackgrounds.map(background => {
+            const isSelected = pageData.pageBackgroundImage === background.image || 
+                              (!pageData.pageBackgroundImage && pageData.pageColor === background.id);
+            return (
+              <button
+                key={background.id}
+                className={`page-background-swatch ${isSelected ? 'selected' : ''}`}
+                onClick={() => updatePageBackground(background.id, background.image)}
+                aria-label={`${background.name} background`}
+                title={background.name}
+              >
+                <img 
+                  src={background.image} 
+                  alt={background.name}
+                  className="background-swatch-image"
+                />
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -79,7 +78,15 @@ const EditorSidebar = ({
                 onClick={() => handleStickerClick(sticker)}
                 title={sticker.name}
               >
-                <span className="sticker-emoji">{sticker.emoji}</span>
+                {sticker.type === 'image' && sticker.image ? (
+                  <img 
+                    src={sticker.image} 
+                    alt={sticker.name}
+                    className="sticker-image"
+                  />
+                ) : (
+                  <span className="sticker-emoji">{sticker.emoji}</span>
+                )}
               </button>
             ))}
           </div>
