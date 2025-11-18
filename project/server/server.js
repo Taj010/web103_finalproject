@@ -10,6 +10,7 @@ import session from 'express-session';
 import passport from 'passport';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
+import createPagesRouter from './routes/pages.js';
 import './passport.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -263,6 +264,10 @@ app.delete('/api/journals/:id', requireAuth, (req, res) => {
     });
   }
 });
+
+// Pages routes (needs access to journals array)
+const pagesRouter = createPagesRouter(journals, requireAuth);
+app.use('/', pagesRouter);
 
 // Debug endpoint (remove in production)
 app.get('/api/debug/journals', (req, res) => {

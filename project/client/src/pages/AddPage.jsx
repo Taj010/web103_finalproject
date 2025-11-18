@@ -91,6 +91,11 @@ const AddPage = () => {
   const [spotifyInput, setSpotifyInput] = useState('');
   const [spotifyError, setSpotifyError] = useState('');
   const [spotifyPreviewId, setSpotifyPreviewId] = useState(null);
+  
+  // Save State
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState('');
 
   // Helper function to update page background
   const updatePageBackground = (backgroundId, backgroundImage = null) => {
@@ -374,6 +379,113 @@ const AddPage = () => {
     setShowSpotifyModal(false);
   };
 
+  const buildPagePayload = () => {
+    const sanitizedImages = Array.isArray(pageData.images)
+      ? pageData.images.map((image) => ({
+          id: image.id,
+          fileName: image.fileName,
+          data: image.data,
+          x: image.x,
+          y: image.y,
+          width: image.width,
+          height: image.height
+        }))
+      : [];
+
+    return {
+      pageColor: pageData.pageColor,
+      pageBackgroundImage: pageData.pageBackgroundImage || null,
+      prompt: pageData.prompt?.trim() || '',
+      images: sanitizedImages,
+      stickers: Array.isArray(pageData.stickers) ? pageData.stickers : [],
+      textElements: Array.isArray(pageData.textElements) ? pageData.textElements : [],
+      doodle: pageData.doodle || null,
+      spotifyUrl: pageData.spotifyUrl || null,
+      metadata: {
+        stickerCount: pageData.stickers.length,
+        imageCount: pageData.images.length,
+        textCount: pageData.textElements.length,
+        brushColor,
+        brushSize,
+        textColor,
+        textSize,
+        savedFrom: 'add-page',
+        timestamp: new Date().toISOString()
+      }
+    };
+  };
+
+  const handleNext = async () => {
+    setSaveError('');
+    setSaveSuccess('');
+
+    const hasContent =
+      pageData.textElements.length > 0 ||
+      pageData.images.length > 0 ||
+      pageData.stickers.length > 0 ||
+      !!pageData.doodle ||
+      !!pageData.spotifyUrl ||
+      !!(pageData.prompt && pageData.prompt.trim());
+
+    if (!hasContent) {
+      alert('Add at least one element to your page before continuing.');
+      return;
+    }
+
+    const payload = buildPagePayload();
+
+    try {
+      setIsSaving(true);
+
+      const response = await fetch(`http://localhost:3000/api/journals/${journalId}/pages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        let message = 'Failed to save page.';
+        const contentType = response.headers.get('content-type');
+        
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            const errorData = await response.json();
+            if (errorData?.message) {
+              message = errorData.message;
+            } else if (errorData?.error) {
+              message = `${errorData.error}: ${errorData.message || 'Unknown error'}`;
+            }
+            console.error('Server error response:', errorData);
+          } catch (parseError) {
+            console.error('Failed to parse error response:', parseError);
+            message = `Server error (${response.status}): Failed to parse response`;
+          }
+        } else {
+          const errorText = await response.text();
+          console.error('Raw error response:', errorText);
+          message = `Server error (${response.status}): ${errorText || 'Unknown error'}`;
+        }
+        throw new Error(message);
+      }
+
+      const savedPage = await response.json();
+      setSaveSuccess('Page saved successfully!');
+      
+      // Navigate to PageDetails with the saved page data
+      navigate(`/journals/${journalId}/pages/${savedPage.id || savedPage.page_id || 'new'}`, {
+        state: { pageData: savedPage }
+      });
+    } catch (error) {
+      console.error('Failed to save page', error);
+      setSaveError(error.message || 'Failed to save page.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Step 9: Image Upload Functions
   const validateImageFile = (file) => {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
@@ -631,6 +743,16 @@ const AddPage = () => {
         {/* Step 10: Page Canvas Rendering System */}
         <main className="page-section">
           <h2 className="page-title">Add Page</h2>
+          {saveError && (
+            <div className="page-alert error" role="alert">
+              {saveError}
+            </div>
+          )}
+          {saveSuccess && (
+            <div className="page-alert success" role="status">
+              {saveSuccess}
+            </div>
+          )}
           {pageData.prompt && (
             <div className="prompt-banner" role="status">
               <span className="prompt-banner-label">Prompt</span>
@@ -902,8 +1024,12 @@ const AddPage = () => {
 
       {/* Footer/Bottom Navigation */}
       <footer className="add-page-footer">
-        <button className="next-btn" onClick={() => navigate(`/journals/${journalId}/pages`)}>
-          Next
+        <button 
+          className="next-btn" 
+          onClick={handleNext}
+          disabled={isSaving}
+        >
+          {isSaving ? 'Saving...' : 'Next'}
         </button>
       </footer>
     </div>

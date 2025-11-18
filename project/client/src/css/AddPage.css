@@ -528,6 +528,28 @@
   font-weight: bold;
   color: #3d2817; /* Dark brown */
   margin-bottom: 2rem;
+}
+
+.page-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+}
+
+.page-alert.error {
+  background-color: #fee;
+  color: #c00;
+  border: 1px solid #fcc;
+}
+
+.page-alert.success {
+  background-color: #efe;
+  color: #060;
+  border: 1px solid #cfc;
   text-align: center;
 }
 
