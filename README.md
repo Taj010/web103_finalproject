@@ -31,25 +31,29 @@ Users can create, name, and manage multiple distinct journals and add new blank 
 
 https://imgur.com/a/jx9wb8L
 
-### Multimedia Page Editor (Baseline)
+### ✅ Multimedia Page Editor (Baseline)
 Allows users to upload a photo, add a text description, and attach a date/location to a page.
-[gif goes here]
+
+![demo](https://i.imgur.com/FPAKhak.gif)
+https://imgur.com/a/nWyYdsu
 
 ### ✅ Sticker & Doodle Toolkit (Custom)
 Users can select from a library of digital stickers and use a doodling tool to personalize their page design.
 
+![demo](https://i.imgur.com/LqaPYqy.gif)
+https://imgur.com/a/FHzCOxQ
 
-![demo](https://i.imgur.com/uQAxrnz.gif)
-
-https://imgur.com/a/Qq4cWlT
-
-### Spotify Song Link (Custom)
+### ✅ Spotify Song Link (Custom)
 Users can link a Spotify song URL to a page to capture the mood, storing the song data in a one-to-one relationship.
-[gif goes here]
 
-### Memory Prompt Generator
+![demo](https://i.imgur.com/OQQkUfs.gif)
+https://imgur.com/a/IzWDR47
+
+### ✅ Memory Prompt Generator
 Users can opt to respond to a random, inspiring prompt (e.g., "What was the most surprising thing that happened today?") to help spark a memory.
-[gif goes here]
+
+![demo](https://i.imgur.com/KxUJecE.gif)
+https://imgur.com/a/UmzoKx1
 
 ### Tagging and Filtering
 Users can tag pages with labels (e.g., “vacation,” “family”) and filter pages by these tags.

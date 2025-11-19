@@ -89,7 +89,7 @@ const CreateJournal = () => {
         console.error('Error creating journal:', err);
         if (err.response?.status === 401) {
           alert('Please log in to create a journal.');
-          navigate('/login');
+          navigate('/');
         } else {
           alert('Failed to create journal. Please try again.');
         }
@@ -118,7 +118,7 @@ const CreateJournal = () => {
         console.error('Error creating journal:', err);
         if (err.response?.status === 401) {
           alert('Please log in to create a journal.');
-          navigate('/login');
+          navigate('/');
         } else {
           alert('Failed to create journal. Please try again.');
         }
@@ -149,7 +149,6 @@ const CreateJournal = () => {
             ) : (
               <div className="color-cover" style={{ backgroundColor: '#FFFFFF' }}>
                 <div className="blank-cover-content">
-                  <i className="fa-solid fa-image blank-cover-icon"></i>
                   <span className="blank-cover-text">Choose a cover below</span>
                 </div>
               </div>
@@ -206,10 +205,10 @@ const CreateJournal = () => {
               value={journalName}
               onChange={(e) => setJournalName(e.target.value)}
               placeholder="My Amazing Journal"
-              maxLength={50}
+              maxLength={20}
               required
             />
-            <span className="char-count">{journalName.length}/50</span>
+            <span className="char-count">{journalName.length}/20</span>
           </div>
 
           <div className="form-group">
@@ -219,10 +218,10 @@ const CreateJournal = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What's this journal about?"
-              maxLength={200}
+              maxLength={50}
               rows={4}
             />
-            <span className="char-count">{description.length}/200</span>
+            <span className="char-count">{description.length}/50</span>
           </div>
 
           <div className="form-actions">

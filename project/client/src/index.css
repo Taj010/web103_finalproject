@@ -19,6 +19,7 @@ h1 {
 
 h2 {
     font-size: 60px;
+    text-align: center;
 }
 
 /* SHARED BUTTON STYLES */
@@ -53,4 +54,22 @@ h2 {
   background-color: #0a0600;
   color: white;
   border-color: #0a0600;
+}
+
+/* BACK BUTTON */
+.back-button {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.back-button:hover {
+  color: #493000;
+  transform: translateX(-4px);
 }

@@ -1,4 +1,3 @@
-// src/pages/EditJournal.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../css/CreateJournal.css';
@@ -14,7 +13,7 @@ const coverOptions = [
 
 const EditJournal = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { journalId: id } = useParams();
 
   const [journalName, setJournalName] = useState('');
   const [description, setDescription] = useState('');
@@ -75,7 +74,7 @@ const EditJournal = () => {
       
       if (err.response?.status === 401) {
         alert('Please log in to edit journals.');
-        navigate('/login');
+        navigate('/');
       } else if (err.response?.status === 404) {
         console.error('❌ Journal not found. ID:', id);
         setTimeout(() => {
@@ -201,7 +200,7 @@ const EditJournal = () => {
             height: '50px',
             margin: '0 auto 1rem',
             border: '4px solid #e5e7eb',
-            borderTopColor: '#8b5cf6',
+            borderTopColor: '#493000',
             borderRadius: '50%',
             animation: 'spin 1s linear infinite'
           }}></div>
@@ -216,7 +215,7 @@ const EditJournal = () => {
       <div className="create-journal-page">
         <div style={{ textAlign: 'center', padding: '4rem' }}>
           <i className="fa-solid fa-circle-exclamation" style={{ fontSize: '4rem', color: '#ef4444', marginBottom: '1rem' }}></i>
-          <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Error Loading Journal</h2>
+          <h2 style={{ color: '#000000', marginBottom: '1rem' }}>Error Loading Journal</h2>
           <p style={{ color: '#6b7280', marginBottom: '2rem' }}>{error}</p>
           <button className="btn-filled" onClick={() => navigate('/journals')}>
             Back to Journals
@@ -238,6 +237,8 @@ const EditJournal = () => {
               <img src={customImagePreview} alt="Journal cover" className="cover-image" />
             ) : selectedCover?.image ? (
               <img src={selectedCover.image} alt={`${selectedCover.name} journal cover`} className="cover-image" />
+            ) : currentCoverImage ? (
+              <img src={currentCoverImage} alt="Journal cover" className="cover-image" />
             ) : (
               <div className="color-cover" style={{ backgroundColor: originalData?.coverColor || '#FFFFFF' }}>
                 <div className="blank-cover-content">
@@ -296,7 +297,7 @@ const EditJournal = () => {
               maxLength={50}
               required
             />
-            <span className="char-count">{journalName.length}/50</span>
+            <span className="char-count">{journalName.length}/10</span>
           </div>
 
           <div className="form-group">
@@ -309,7 +310,7 @@ const EditJournal = () => {
               maxLength={200}
               rows={4}
             />
-            <span className="char-count">{description.length}/200</span>
+            <span className="char-count">{description.length}/50</span>
           </div>
 
           {hasChanges() && (
@@ -334,7 +335,6 @@ const EditJournal = () => {
               Cancel
             </button>
             <button type="submit" className="btn-filled" disabled={!hasChanges()}>
-              <i className="fa-solid fa-floppy-disk"></i>
               Save Changes
             </button>
           </div>

@@ -1,4 +1,3 @@
-// src/pages/AllJournals.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/AllJournals.css';
@@ -43,7 +42,7 @@ const AllJournals = () => {
     } catch (err) {
       console.error('Error fetching journals:', err);
       if (err.response?.status === 401) {
-        navigate('/login');
+        navigate('/');
       }
     } finally {
       setLoading(false);
@@ -119,7 +118,7 @@ const AllJournals = () => {
   return (
     <div className="all-journals-page">
       {/* Centered Title */}
-      <h1 className="page-title">All Journals</h1>
+      <h2>All Journals</h2>
 
       {/* Search and Create Button Row */}
       <div className="search-create-row">
@@ -127,7 +126,7 @@ const AllJournals = () => {
           <i className="fa-solid fa-magnifying-glass search-icon"></i>
           <input
             type="text"
-            placeholder="Search journals..."
+            placeholder="Search your journals"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -138,51 +137,13 @@ const AllJournals = () => {
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="filters">
-        <span className="filters-label">Filters:</span>
-
-        <div className="filter-group">
-          <label>Date:</label>
-          <input
-            type="month"
-            value={filterDate}
-            onChange={e => setFilterDate(e.target.value)}
-          />
-        </div>
-
-        <div className="filter-group">
-          <label>Location:</label>
-          <select value={filterLocation} onChange={e => setFilterLocation(e.target.value)}>
-            <option value="">All</option>
-            {locations.map(loc => (
-              <option key={loc} value={loc}>{loc}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-group tags">
-          <label>Tags:</label>
-          {tags.map(tag => (
-            <button
-              key={tag}
-              className={filterTags.includes(tag) ? 'selected' : ''}
-              onClick={() => toggleTag(tag)}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Journal Cards or Empty State */}
       {filteredJournals.length === 0 ? (
         <div className="empty-state">
           <i className="fa-solid fa-book-open"></i>
           <h3>No journals found</h3>
           <p>
             {journals.length === 0 
-              ? "Start your journaling journey by creating your first journal!"
+              ? "Start journaling your memories by creating your first journal!"
               : "Try adjusting your search or filters."
             }
           </p>
@@ -198,7 +159,14 @@ const AllJournals = () => {
             <div key={journal.id} className="journal-card" onClick={() => handleViewJournal(journal.id)}>
               <div className="journal-cover">
                 {journal.coverImage ? (
-                  <img src={journal.coverImage} alt={`${journal.name} cover`} />
+                  <img 
+                    src={
+                      journal.coverImage?.startsWith('/uploads') 
+                        ? `http://localhost:3000${journal.coverImage}` 
+                        : journal.coverImage
+                    }
+                    alt={`${journal.name} cover`} 
+                  />
                 ) : (
                   <div
                     className="color-cover"

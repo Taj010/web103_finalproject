@@ -4,16 +4,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
-}
-
-/* Centered Page Title */
-.page-title {
-  font-family: 'Caprasimo', cursive;
-  text-align: center;
-  color: #1f2937;
-  font-weight: 700;
-  margin: 0 0 1.5rem 0;
-  font-size: 2.5rem;
+  position: relative;
 }
 
 /* Search and Create Button Row */
@@ -27,10 +18,18 @@
   border-bottom: 2px solid #e5e7eb;
 }
 
+.search-create-row .btn-filled {
+  padding: 0.75rem 1.25rem; /* smaller width */
+  flex: 0 0 auto;
+  width: auto;
+  white-space: nowrap;
+}
+
 /* Search Container */
 .search-container {
   position: relative;
-  width: 800px;
+  max-width: 800px;
+  width: 100%;
 }
 
 .search-icon {
@@ -39,7 +38,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: #9ca3af;
-  font-size: 1rem;
+  font-size: 20px;
   pointer-events: none;
 }
 
@@ -192,7 +191,7 @@
 /* Journal Cover */
 .journal-cover {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 3 / 4;
   position: relative;
   overflow: hidden;
   background-color: #f3f4f6;
@@ -456,9 +455,13 @@
     width: 100%;
   }
 
-  .search-create-row .btn-filled {
+  .search-create-row{
     width: 100%;
     justify-content: center;
+  }
+
+  .btn-filled {
+    max-width: fit-content;
   }
 
   .filters {
@@ -504,4 +507,30 @@ button {
 input,
 select {
   font-family: inherit;
+}
+
+.back-button {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.back-button:hover {
+  color: #493000;
+  transform: translateX(-4px);
+}
+
+.journal-description-subtitle {
+  font-style: italic;
+  color: #6b7280;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
 }

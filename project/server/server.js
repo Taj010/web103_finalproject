@@ -1,305 +1,291 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express from 'express';
-import path from 'path';
+import express from "express";
+import session from "express-session";
+import cors from "cors";
+import passport from "./passport.js";
+import multer from "multer";
+import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import favicon from 'serve-favicon';
-import session from 'express-session';
-import passport from 'passport';
-import cors from 'cors';
 import authRoutes from './routes/auth.js';
-import createPagesRouter from './routes/pages.js';
-import './passport.js';
+import fs from "fs";
+import { getPages, getPageById, getPagesByJournalId } from "./data/pages.js";
+import { getJournals, addJournal, getJournalById } from './data/journals.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+let journals = [];
+let pages = [];
 
-const PORT = process.env.PORT || 3000;
 const app = express();
+const PORT = 3000;
 
-app.set('trust proxy', 1);
-
-// CORS configuration
-const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL_PROD 
-    : 'http://localhost:5173',
+// --------------------------------------------------
+// Middleware
+// --------------------------------------------------
+app.use(cors({
+  origin: "http://localhost:5173",
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-};
+}));
 
-app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
-app.use('/covers', express.static(path.join(__dirname, '../client/public/covers')));
+app.use(
+  session({
+    secret: "SECRET123",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-// Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'someRandomSecret123',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-  }
-}));
-
-// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Favicon
-if (process.env.NODE_ENV === 'development') {
-  try {
-    app.use(favicon(path.join(__dirname, '../client/public/logo.png')));
-  } catch (err) {
-    console.log('⚠️  Favicon not found, skipping...');
-  }
+// --------------------------------------------------
+// Multer Upload Setup
+// --------------------------------------------------
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
 }
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString()
-  });
+const storage = multer.diskStorage({
+  destination: (_, __, cb) => cb(null, uploadDir),
+  filename: (_, file, cb) => {
+    const unique = Date.now() + path.extname(file.originalname);
+    cb(null, unique);
+  }
 });
 
-// Auth routes
-app.use('/auth', authRoutes);
+const upload = multer({ storage });
 
-// ==========================================
-// JOURNAL ROUTES
-// ==========================================
-
-// In-memory storage
-let journals = [];
-
-// Middleware to check authentication
+// --------------------------------------------------
+// Auth Middleware
+// --------------------------------------------------
 const requireAuth = (req, res, next) => {
-  console.log('🔐 Auth check:', {
-    isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
-    user: req.user ? { id: req.user.id, email: req.user.email } : null
-  });
-  
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ error: "Not authenticated" });
   }
-  res.status(401).json({ error: 'Authentication required' });
+  next();
 };
 
-// GET all journals - MUST come before /:id route
-app.get('/api/journals', requireAuth, (req, res) => {
-  try {
-    const userId = req.user?.id || req.user?.googleId;
-    console.log('📚 GET /api/journals');
-    console.log('👤 User ID:', userId);
-    console.log('📊 Total journals in memory:', journals.length);
-    
-    const userJournals = journals.filter(j => j.userId === userId);
-    console.log('📊 User\'s journals:', userJournals.length);
-    
-    res.json(userJournals);
-  } catch (error) {
-    console.error('❌ Error fetching journals:', error);
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: 'Failed to fetch journals'
-    });
-  }
+// --------------------------------------------------
+// Auth Routes
+// --------------------------------------------------
+app.get("/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "http://localhost:5173/journals",
+    failureRedirect: "http://localhost:5173",
+  })
+);
+
+app.get("/auth/me", (req, res) => {
+  if (!req.user) return res.json(null);
+  res.json(req.user);
 });
 
-// POST create journal
-app.post('/api/journals', requireAuth, (req, res) => {
+app.post("/auth/logout", (req, res) => {
+  req.logout(() => res.json({ message: "Logged out" }));
+});
+
+// --------------------------------------------------
+// JOURNAL ROUTES
+// --------------------------------------------------
+
+/**
+ * CREATE A JOURNAL
+ * Supports both:
+ * - multipart/form-data (with image upload)
+ * - application/json (preset covers)
+ */
+
+app.post("/api/journals", requireAuth, upload.single("coverImage"), (req, res) => {
   try {
-    const { name, description, coverImage, coverColor, coverName } = req.body;
-    const userId = req.user?.id || req.user?.googleId;
+    const { name, description, coverColor, coverName, coverImage } = req.body;
 
-    console.log('📝 POST /api/journals');
-    console.log('👤 User ID:', userId);
-    console.log('📋 Data:', { name, coverImage, coverColor });
-
-    if (!name || !name.trim()) {
-      return res.status(400).json({ 
-        error: 'Validation failed',
-        message: 'Journal name is required.' 
-      });
+    if (!name?.trim()) {
+      return res.status(400).json({ error: "Journal name is required." });
     }
+
+    const userId = req.user.id || req.user.googleId;
 
     const newJournal = {
       id: Date.now(),
       name: name.trim(),
-      description: description?.trim() || '',
-      coverImage: coverImage || null,
-      coverColor: coverColor || '#8b5cf6',
-      coverName: coverName || 'default',
+      description: description?.trim() || "",
+      coverColor: coverColor || null,
+      coverName: coverName || null,
+
+      // Uploaded image OR preset image
+      coverImage: req.file
+        ? `/uploads/${req.file.filename}`
+        : coverImage || null,
+
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      userId: userId,
+      userId,
+
       pageCount: 0,
       tags: [],
-      location: ''
+      location: ""
     };
 
     journals.push(newJournal);
-    console.log('✅ Journal created:', newJournal.name);
-    console.log('📊 Total journals now:', journals.length);
-
     res.status(201).json(newJournal);
-  } catch (error) {
-    console.error('❌ Error creating journal:', error);
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: 'Failed to create journal'
-    });
+  } catch (err) {
+    console.error("Error creating journal:", err);
+    res.status(500).json({ error: "Failed to create journal" });
   }
 });
 
-// GET single journal by ID
-app.get('/api/journals/:id', requireAuth, (req, res) => {
-  try {
-    const journalId = parseInt(req.params.id);
-    const userId = req.user?.id || req.user?.googleId;
-    
-    console.log('🔍 GET /api/journals/:id');
-    console.log('📋 Looking for journal:', journalId);
-    console.log('👤 User ID:', userId);
-    
-    const journal = journals.find(j => j.id === journalId && j.userId === userId);
-    
-    if (!journal) {
-      console.log('❌ Journal not found');
-      return res.status(404).json({ 
-        error: 'Not found',
-        message: 'Journal not found' 
-      });
-    }
-    
-    console.log('✅ Found journal:', journal.name);
-    res.json(journal);
-  } catch (error) {
-    console.error('❌ Error fetching journal:', error);
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: 'Failed to fetch journal'
-    });
-  }
+// Get all journals for the logged-in user
+app.get("/api/journals", requireAuth, (req, res) => {
+  const userId = req.user.id || req.user.googleId;
+  const userJournals = journals.filter(j => j.userId === userId);
+  res.json(userJournals);
 });
 
-// PUT update journal
-app.put('/api/journals/:id', requireAuth, (req, res) => {
-  try {
-    const journalId = parseInt(req.params.id);
-    const userId = req.user?.id || req.user?.googleId;
-    const { name, description, coverImage, coverColor } = req.body;
-    
-    console.log('✏️ PUT /api/journals/:id');
-    console.log('📋 Updating journal:', journalId);
-    
-    const journalIndex = journals.findIndex(j => j.id === journalId && j.userId === userId);
-    
-    if (journalIndex === -1) {
-      return res.status(404).json({ 
-        error: 'Not found',
-        message: 'Journal not found' 
-      });
-    }
-    
-    journals[journalIndex] = {
-      ...journals[journalIndex],
-      name: name?.trim() || journals[journalIndex].name,
-      description: description?.trim() || journals[journalIndex].description,
-      coverImage: coverImage || journals[journalIndex].coverImage,
-      coverColor: coverColor || journals[journalIndex].coverColor,
-      updatedAt: new Date().toISOString()
-    };
-    
-    console.log('✅ Journal updated:', journals[journalIndex].name);
-    res.json(journals[journalIndex]);
-  } catch (error) {
-    console.error('❌ Error updating journal:', error);
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: 'Failed to update journal'
-    });
-  }
+// --------------------------------------------------
+// PAGE ROUTES
+// --------------------------------------------------
+
+// Create page
+app.post("/api/journals/:journalId/pages", requireAuth, (req, res) => {
+  const journalId = req.params.journalId;
+  const journal = journals.find(j => j.id == journalId);
+
+  if (!journal) return res.status(404).json({ error: "Journal not found" });
+
+  const { title, content, tags, location } = req.body;
+
+  const newPage = {
+    id: Date.now(),
+    journalId,
+    title,
+    content,
+    tags: tags || [],
+    location: location || "",
+    createdAt: new Date().toISOString(),
+  };
+
+  pages.push(newPage);
+
+  journal.pageCount = pages.filter(p => p.journalId == journalId).length;
+
+  res.status(201).json(newPage);
 });
 
-// DELETE journal
-app.delete('/api/journals/:id', requireAuth, (req, res) => {
-  try {
-    const journalId = parseInt(req.params.id);
-    const userId = req.user?.id || req.user?.googleId;
-    
-    console.log('🗑️ DELETE /api/journals/:id');
-    console.log('📋 Deleting journal:', journalId);
-    
-    const journalIndex = journals.findIndex(j => j.id === journalId && j.userId === userId);
-    
-    if (journalIndex === -1) {
-      return res.status(404).json({ 
-        error: 'Not found',
-        message: 'Journal not found' 
-      });
-    }
-    
-    const deletedJournal = journals[journalIndex];
-    journals.splice(journalIndex, 1);
-    
-    console.log('✅ Journal deleted:', deletedJournal.name);
-    res.json({ message: 'Journal deleted successfully' });
-  } catch (error) {
-    console.error('❌ Error deleting journal:', error);
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: 'Failed to delete journal'
-    });
-  }
+// Get single page
+app.get("/api/journals/:journalId/pages/:pageId", requireAuth, (req, res) => {
+  const page = pages.find(p => p.id == req.params.pageId);
+  if (!page) return res.status(404).json({ error: "Page not found" });
+  res.json(page);
 });
 
-// Pages routes (needs access to journals array)
-const pagesRouter = createPagesRouter(journals, requireAuth);
-app.use('/', pagesRouter);
+// Get all pages for a journal
+app.get("/api/journals/:journalId/pages", requireAuth, (req, res) => {
+  const journalId = parseInt(req.params.journalId, 10);
+  const journalPages = pages.filter(p => p.journalId === journalId);
+  res.json(journalPages);
+});
 
-// Debug endpoint (remove in production)
-app.get('/api/debug/journals', (req, res) => {
-  res.json({
-    total: journals.length,
-    journals: journals.map(j => ({
-      id: j.id,
-      name: j.name,
-      userId: j.userId
-    }))
+// Delete a page
+app.delete("/api/journals/:journalId/pages/:pageId", requireAuth, (req, res) => {
+  const index = pages.findIndex(p => p.id == req.params.pageId);
+  if (index === -1) return res.status(404).json({ error: "Page not found" });
+
+  pages.splice(index, 1);
+  res.json({ message: "Page deleted" });
+});
+
+// --------------------------------------------------
+// JOURNAL :id ROUTES (these must come LAST)
+// --------------------------------------------------
+
+// Get a single journal
+app.get("/api/journals/:id", requireAuth, (req, res) => {
+  const journalId = parseInt(req.params.id, 10);
+  const userId = req.user.id || req.user.googleId;
+  
+  console.log('\n=== GET JOURNAL REQUEST ===');
+  console.log('📍 URL:', req.url);
+  console.log('🔢 Requested ID (raw):', req.params.id, typeof req.params.id);
+  console.log('🔢 Parsed ID:', journalId, typeof journalId);
+  console.log('👤 User ID:', userId);
+  console.log('📚 Total journals in memory:', journals.length);
+  console.log('📋 All journals:', JSON.stringify(journals.map(j => ({ 
+    id: j.id, 
+    type: typeof j.id,
+    name: j.name, 
+    userId: j.userId 
+  })), null, 2));
+  
+  const journal = journals.find(j => {
+    console.log(`   Comparing: j.id (${j.id}, ${typeof j.id}) === journalId (${journalId}, ${typeof journalId}) = ${j.id === journalId}`);
+    return j.id === journalId;
   });
+  
+  if (!journal) {
+    console.log('❌ Journal NOT FOUND');
+    console.log('=========================\n');
+    return res.status(404).json({ error: "Journal not found" });
+  }
+  
+  console.log('✅ Journal FOUND:', journal.name);
+  console.log('=========================\n');
+  res.json(journal);
 });
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('❌ Server Error:', err);
-  res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
-      : err.message
-  });
+// Update a journal
+app.put("/api/journals/:id", requireAuth, upload.single("coverImage"), (req, res) => {
+  const journalId = parseInt(req.params.id, 10);
+  const journal = journals.find(j => j.id === journalId);
+  
+  if (!journal) return res.status(404).json({ error: "Journal not found" });
+
+  const { name, description, coverColor, coverName, coverImage } = req.body;
+
+  journal.name = name?.trim() || journal.name;
+  journal.description = description?.trim() || journal.description;
+  journal.coverColor = coverColor || journal.coverColor;
+  journal.coverName = coverName || journal.coverName;
+
+  if (req.file) {
+    journal.coverImage = `/uploads/${req.file.filename}`;
+  } else if (coverImage) {
+    journal.coverImage = coverImage;
+  }
+
+  journal.updatedAt = new Date().toISOString();
+
+  res.json(journal);
 });
 
-// 404 handler - MUST be last
-app.use((req, res) => {
-  console.log('❌ 404 Not Found:', req.method, req.url);
-  res.status(404).json({ error: 'Not Found' });
+// Delete a journal
+app.delete("/api/journals/:id", requireAuth, (req, res) => {
+  const journalId = parseInt(req.params.id, 10);
+  const index = journals.findIndex(j => j.id === journalId);
+  
+  if (index === -1) return res.status(404).json({ error: "Journal not found" });
+
+  journals.splice(index, 1);
+  res.json({ message: "Journal deleted" });
 });
 
-// Start server
+// --------------------------------------------------
+// STATIC FILE SERVING FOR UPLOADS
+// --------------------------------------------------
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+// --------------------------------------------------
+// Start Server
+// --------------------------------------------------
 app.listen(PORT, () => {
-  console.log(`🚀 Server listening on http://localhost:${PORT}`);
-  console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Frontend: http://localhost:5173`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
