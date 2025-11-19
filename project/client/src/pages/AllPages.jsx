@@ -16,40 +16,40 @@ const AllPages = () => {
   const [filterTags, setFilterTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Extract unique locations and tags from pages
-  const getUniqueLocations = () => {
-    const locationSet = new Set();
-    pages.forEach(page => {
-      if (page.metadata?.location && page.metadata.location.trim()) {
-        locationSet.add(page.metadata.location.trim());
-      }
-    });
-    return Array.from(locationSet).sort();
-  };
-
-  const getUniqueTags = () => {
-    const tagSet = new Set();
-    pages.forEach(page => {
-      if (page.metadata?.tags) {
-        let tags = page.metadata.tags;
-        // Handle both array and string formats
+  // Extract dynamic filter values from existing pages
+  const uniqueTags = Array.from(
+    new Set(
+      pages.flatMap(p => {
+        let tags = p.metadata?.tags || [];
         if (typeof tags === 'string') {
-          tags = tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+          tags = tags.split(',').map(t => t.trim());
         }
-        if (Array.isArray(tags)) {
-          tags.forEach(tag => {
-            if (tag && tag.trim()) {
-              tagSet.add(tag.trim());
-            }
-          });
-        }
-      }
-    });
-    return Array.from(tagSet).sort();
-  };
+        return tags;
+      })
+    )
+  );
 
-  const locations = getUniqueLocations();
-  const tags = getUniqueTags();
+  const uniqueLocations = Array.from(
+    new Set(
+      pages
+        .map(p => p.metadata?.location)
+        .filter(loc => loc && loc.trim() !== '')
+    )
+  );
+
+  const uniqueDates = Array.from(
+    new Set(
+      pages
+        .map(p => p.metadata?.date)
+        .filter(d => d && d.trim() !== '')
+        .map(d => {
+          // Convert "November 18, 2025" → "2025-11"
+          const parsed = new Date(d);
+          return !isNaN(parsed) ? parsed.toISOString().slice(0, 7) : null;
+        })
+        .filter(Boolean)
+    )
+  );
 
   useEffect(() => {
     fetchJournalAndPages();
@@ -103,12 +103,11 @@ const AllPages = () => {
     })
     .filter(p => {
       if (!filterDate) return true;
-      // Filter by year-month (format: YYYY-MM)
-      const pageDate = p.createdAt || p.metadata?.date;
-      if (!pageDate) return false;
-      const dateObj = new Date(pageDate);
-      const pageYearMonth = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
-      return pageYearMonth === filterDate;
+      const d = p.metadata?.date;
+      if (!d) return false;
+      const parsed = new Date(d);
+      const yearMonth = !isNaN(parsed) ? parsed.toISOString().slice(0, 7) : '';
+      return yearMonth === filterDate;
     })
     .filter(p => {
       if (!filterLocation) return true;
@@ -116,20 +115,11 @@ const AllPages = () => {
     })
     .filter(p => {
       if (filterTags.length === 0) return true;
-      const pageTags = p.metadata?.tags || [];
-      let pageTagsArray = [];
-      if (typeof pageTags === 'string') {
-        pageTagsArray = pageTags.split(',').map(t => t.trim()).filter(t => t.length > 0);
-      } else if (Array.isArray(pageTags)) {
-        pageTagsArray = pageTags.map(t => typeof t === 'string' ? t.trim() : t);
+      let tags = p.metadata?.tags || [];
+      if (typeof tags === 'string') {
+        tags = tags.split(',').map(t => t.trim());
       }
-      // Check if all selected filter tags are present in page tags
-      return filterTags.every(filterTag => 
-        pageTagsArray.some(pageTag => 
-          (typeof pageTag === 'string' ? pageTag.toLowerCase() : String(pageTag).toLowerCase()) === 
-          filterTag.toLowerCase()
-        )
-      );
+      return filterTags.every(tag => tags.includes(tag));
     });
 
   const handleViewPage = (pageId) => {
@@ -189,42 +179,35 @@ const AllPages = () => {
 
         <div className="filter-group">
           <label>Date:</label>
-          <input
-            type="month"
-            value={filterDate}
-            onChange={e => setFilterDate(e.target.value)}
-          />
+          <select value={filterDate} onChange={e => setFilterDate(e.target.value)}>
+            <option value="">All</option>
+            {uniqueDates.map(date => (
+              <option key={date} value={date}>{date}</option>
+            ))}
+          </select>
         </div>
 
         <div className="filter-group">
           <label>Location:</label>
           <select value={filterLocation} onChange={e => setFilterLocation(e.target.value)}>
             <option value="">All</option>
-            {locations.length > 0 ? (
-              locations.map(loc => (
-                <option key={loc} value={loc}>{loc}</option>
-              ))
-            ) : (
-              <option disabled>No locations available</option>
-            )}
+            {uniqueLocations.map(loc => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
           </select>
         </div>
 
         <div className="filter-group tags">
           <label>Tags:</label>
-          {tags.length > 0 ? (
-            tags.map(tag => (
-              <button
-                key={tag}
-                className={filterTags.includes(tag) ? 'selected' : ''}
-                onClick={() => toggleTag(tag)}
-              >
-                {tag}
-              </button>
-            ))
-          ) : (
-            <span className="no-tags-message">No tags available</span>
-          )}
+          {uniqueTags.map(tag => (
+            <button
+              key={tag}
+              className={filterTags.includes(tag) ? 'selected' : ''}
+              onClick={() => toggleTag(tag)}
+            >
+              {tag}
+            </button>
+          ))}
         </div>
       </div>
 
