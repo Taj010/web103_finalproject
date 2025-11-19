@@ -31,7 +31,7 @@ const PageDetails = () => {
   // Fetch page data if not provided via navigation
   useEffect(() => {
     if (!pageData && pageId) {
-      fetch(`http://localhost:3000/api/journals/${journalId}/pages/${pageId}`, {
+      fetch(`https://stickerbackend.onrender.com/api/journals/${journalId}/pages/${pageId}`, {
         credentials: 'include'
       })
         .then(res => res.json())
@@ -99,8 +99,8 @@ const PageDetails = () => {
       };
 
       const url = pageId 
-        ? `http://localhost:3000/api/journals/${journalId}/pages/${pageId}`
-        : `http://localhost:3000/api/journals/${journalId}/pages`;
+        ? `https://stickerbackend.onrender.com/api/journals/${journalId}/pages/${pageId}`
+        : `https://stickerbackend.onrender.com/api/journals/${journalId}/pages`;
       
       const method = pageId ? 'PUT' : 'POST';
 

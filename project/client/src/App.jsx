@@ -19,7 +19,7 @@ const App = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/auth/me', { credentials: 'include' })  // Change this
+    fetch('https://stickerbackend.onrender.com/auth/me', { credentials: 'include' })  // Change this
       .then(res => res.json())
       .then(data => {
         console.log('👤 User data received:', data); // Add this debug log
@@ -29,7 +29,7 @@ const App = () => {
   }, []);
 
   const handleLogout = () => {
-    window.location.href = 'http://localhost:3000/auth/logout';
+    window.location.href = 'https://stickerbackend.onrender.com/auth/logout';
   };
 
   const element = useRoutes([

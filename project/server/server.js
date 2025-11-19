@@ -23,7 +23,7 @@ const PORT = 3000;
 // Middleware
 // --------------------------------------------------
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://stickerystory.onrender.com",
   credentials: true,
 }));
 
@@ -81,8 +81,8 @@ app.get("/auth/google",
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    successRedirect: "http://localhost:5173/journals",
-    failureRedirect: "http://localhost:5173",
+    successRedirect: "https://stickerystory.onrender.com/journals",
+    failureRedirect: "https://stickerystory.onrender.com",
   })
 );
 
@@ -241,5 +241,5 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 // Start Server
 // --------------------------------------------------
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running');
 });

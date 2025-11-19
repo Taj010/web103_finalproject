@@ -60,13 +60,13 @@ const AllPages = () => {
       setLoading(true);
 
       // fetch journal info
-      const journalRes = await axios.get(`http://localhost:3000/api/journals/${journalId}`, {
+      const journalRes = await axios.get(`https://stickerbackend.onrender.com/api/journals/${journalId}`, {
         withCredentials: true,
       });
       setJournal(journalRes.data);
 
       // fetch pages for this journal
-      const pagesRes = await axios.get(`http://localhost:3000/api/journals/${journalId}/pages`, {
+      const pagesRes = await axios.get(`https://stickerbackend.onrender.com/api/journals/${journalId}/pages`, {
         withCredentials: true,
       });
       setPages(pagesRes.data);
@@ -238,7 +238,7 @@ const AllPages = () => {
                     src={
                       page.pageBackgroundImage?.startsWith('/pages') 
                         ? page.pageBackgroundImage 
-                        : `http://localhost:3000${page.pageBackgroundImage}`
+                        : `https://stickerbackend.onrender.com${page.pageBackgroundImage}`
                     }
                     alt="Page background" 
                   />

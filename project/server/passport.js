@@ -12,7 +12,7 @@ passport.use(
       callbackURL:
         process.env.NODE_ENV === 'production'
           ? `${process.env.FRONTEND_URL_PROD}/auth/google/callback`
-          : 'http://localhost:3000/auth/google/callback',
+          : 'https://stickerbackend.onrender.com/auth/google/callback',
     },
     (accessToken, refreshToken, profile, done) => {
       return done(null, profile);

@@ -38,9 +38,9 @@ const EditJournal = () => {
       setError(null);
       
       console.log('📡 Fetching journal:', id);
-      console.log('📡 Full URL:', `http://localhost:3000/api/journals/${id}`);
+      console.log('📡 Full URL:', `https://stickerbackend.onrender.com/api/journals/${id}`);
       
-      const response = await axios.get(`http://localhost:3000/api/journals/${id}`, {
+      const response = await axios.get(`https://stickerbackend.onrender.com/api/journals/${id}`, {
         withCredentials: true,
       });
       
@@ -154,7 +154,7 @@ const EditJournal = () => {
       formData.append('coverName', 'custom');
 
       try {
-        const response = await axios.put(`http://localhost:3000/api/journals/${id}`, formData, {
+        const response = await axios.put(`https://stickerbackend.onrender.com/api/journals/${id}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
           withCredentials: true,
         });
@@ -177,7 +177,7 @@ const EditJournal = () => {
       console.log('📤 Sending update:', journalData);
 
       try {
-        const response = await axios.put(`http://localhost:3000/api/journals/${id}`, journalData, {
+        const response = await axios.put(`https://stickerbackend.onrender.com/api/journals/${id}`, journalData, {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         });

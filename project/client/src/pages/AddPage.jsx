@@ -437,7 +437,7 @@ const AddPage = () => {
     try {
       setIsSaving(true);
 
-      const response = await fetch(`http://localhost:3000/api/journals/${journalId}/pages`, {
+      const response = await fetch(`https://stickerbackend.onrender.com/api/journals/${journalId}/pages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

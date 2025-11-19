@@ -16,19 +16,19 @@ const JournalPage = () => {
         setIsLoading(true);
 
         // Fetch journal info
-        fetch(`http://localhost:3000/api/journals/${journalId}`, { credentials: 'include' })
+        fetch(`https://stickerbackend.onrender.com/api/journals/${journalId}`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => setJournalData(data))
         .catch(err => console.error('Failed to fetch journal:', err));
 
         // Fetch current page
-        fetch(`http://localhost:3000/api/journals/${journalId}/pages/${pageId}`, { credentials: 'include' })
+        fetch(`https://stickerbackend.onrender.com/api/journals/${journalId}/pages/${pageId}`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => setPageData(data))
         .catch(err => console.error('Failed to fetch page:', err));
 
         // Fetch all pages to handle "Next"
-        fetch(`http://localhost:3000/api/journals/${journalId}/pages`, { credentials: 'include' })
+        fetch(`https://stickerbackend.onrender.com/api/journals/${journalId}/pages`, { credentials: 'include' })
         .then(res => res.json())
         .then(pages => setJournalData(prev => ({ ...prev, pages }))) // merge pages into journalData
         .catch(err => console.error('Failed to fetch all pages:', err))

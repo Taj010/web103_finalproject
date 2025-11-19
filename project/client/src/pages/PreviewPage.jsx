@@ -16,7 +16,7 @@ const PreviewPage = () => {
   useEffect(() => {
     if (pageId && journalId) {
       // Fetch journal data
-      fetch(`http://localhost:3000/api/journals/${journalId}`, {
+      fetch(`https://stickerbackend.onrender.com/api/journals/${journalId}`, {
         credentials: 'include'
       })
         .then(res => res.json())
@@ -28,7 +28,7 @@ const PreviewPage = () => {
         });
 
       // Fetch page data
-      fetch(`http://localhost:3000/api/journals/${journalId}/pages/${pageId}`, {
+      fetch(`https://stickerbackend.onrender.com/api/journals/${journalId}/pages/${pageId}`, {
         credentials: 'include'
       })
         .then(res => res.json())
@@ -55,7 +55,7 @@ const PreviewPage = () => {
 
     setIsSaving(true);
     try {
-      const url = `http://localhost:3000/api/journals/${journalId}/pages/${pageId}`;
+      const url = 'https://stickerbackend.onrender.com/api/journals/${journalId}/pages/${pageId}`;
       
       const response = await fetch(url, {
         method: 'PUT',

@@ -76,7 +76,7 @@ const CreateJournal = () => {
       formData.append('coverName', 'custom');
 
       try {
-        const response = await axios.post('http://localhost:3000/api/journals', formData, {
+        const response = await axios.post('https://stickerbackend.onrender.com/api/journals', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -105,7 +105,7 @@ const CreateJournal = () => {
       };
 
       try {
-        const response = await axios.post('http://localhost:3000/api/journals', journalData, {
+        const response = await axios.post('https://stickerbackend.onrender.com/api/journals', journalData, {
           headers: {
             'Content-Type': 'application/json',
           },

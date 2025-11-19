@@ -35,7 +35,7 @@ const AllJournals = () => {
   const fetchJournals = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:3000/api/journals', {
+      const response = await axios.get('https://stickerbackend.onrender.com/api/journals', {
         withCredentials: true,
       });
       setJournals(response.data);
@@ -82,7 +82,7 @@ const AllJournals = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:3000/api/journals/${journalId}`, {
+      await axios.delete(`https://stickerbackend.onrender.com/api/journals/${journalId}`, {
         withCredentials: true,
       });
       
@@ -162,7 +162,7 @@ const AllJournals = () => {
                   <img 
                     src={
                       journal.coverImage?.startsWith('/uploads') 
-                        ? `http://localhost:3000${journal.coverImage}` 
+                        ? `https://stickerbackend.onrender.com${journal.coverImage}` 
                         : journal.coverImage
                     }
                     alt={`${journal.name} cover`} 
