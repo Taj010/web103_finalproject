@@ -276,7 +276,7 @@ const PageDetails = () => {
           id="title"
           type="text"
           className="page-form-input"
-          placeholder="enter page title"
+          placeholder="Page Title"
           value={formData.title}
           onChange={(e) => handleInputChange('title', e.target.value)}
         />
@@ -328,7 +328,7 @@ const PageDetails = () => {
           id="location"
           type="text"
           className="page-form-input"
-          placeholder="memory location"
+          placeholder="Memory Location"
           value={formData.location}
           onChange={(e) => handleInputChange('location', e.target.value)}
         />
@@ -339,7 +339,7 @@ const PageDetails = () => {
         <textarea
           id="description"
           className="page-form-textarea"
-          placeholder="enter page description"
+          placeholder="Page Description"
           value={formData.description}
           onChange={(e) => handleInputChange('description', e.target.value)}
         />

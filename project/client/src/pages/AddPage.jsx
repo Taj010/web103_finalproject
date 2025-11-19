@@ -30,7 +30,7 @@ const AddPage = () => {
     { id: 102, image: '/stickers/collage.jpg', name: 'Collage', type: 'image' },
     { id: 103, image: '/stickers/flowers.jpg', name: 'Flowers', type: 'image' },
     { id: 104, image: '/stickers/hearts.jpg', name: 'Hearts', type: 'image' },
-    { id: 105, image: '/stickers/logo.png', name: 'Logo', type: 'image' },
+    { id: 105, image: '/logo.png', name: 'Logo', type: 'image' },
     { id: 106, image: '/stickers/Meow.jpg', name: 'Meow', type: 'image' },
     { id: 107, image: '/stickers/moon.jpg', name: 'Moon', type: 'image' },
     { id: 108, image: '/stickers/stars.jpg', name: 'Stars', type: 'image' }
@@ -742,7 +742,7 @@ const AddPage = () => {
         {/* Center Section - Page Canvas */}
         {/* Step 10: Page Canvas Rendering System */}
         <main className="page-section">
-          <h2 className="page-title">Add Page</h2>
+          <h2>Add Page</h2>
           {saveError && (
             <div className="page-alert error" role="alert">
               {saveError}
