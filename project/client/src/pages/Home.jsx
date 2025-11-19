@@ -4,7 +4,7 @@ import "../css/Home.css";
 const Home = () => {
 
   const handleGoogleLogin = () => {
-    window.location.href = "https://stickerbackend.onrender.com/auth/google/callback";
+    window.location.href = "https://stickerbackend.onrender.com/auth/google";
   };
 
   return (
