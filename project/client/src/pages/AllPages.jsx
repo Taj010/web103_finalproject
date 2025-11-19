@@ -16,9 +16,40 @@ const AllPages = () => {
   const [filterTags, setFilterTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Example tags and locations
-  const tags = ['Travel', 'Work', 'Personal', 'School'];
-  const locations = ['New York', 'Los Angeles', 'Chicago', 'Other'];
+  // Extract dynamic filter values from existing pages
+  const uniqueTags = Array.from(
+    new Set(
+      pages.flatMap(p => {
+        let tags = p.metadata?.tags || [];
+        if (typeof tags === 'string') {
+          tags = tags.split(',').map(t => t.trim());
+        }
+        return tags;
+      })
+    )
+  );
+
+  const uniqueLocations = Array.from(
+    new Set(
+      pages
+        .map(p => p.metadata?.location)
+        .filter(loc => loc && loc.trim() !== '')
+    )
+  );
+
+  const uniqueDates = Array.from(
+    new Set(
+      pages
+        .map(p => p.metadata?.date)
+        .filter(d => d && d.trim() !== '')
+        .map(d => {
+          // Convert "November 18, 2025" → "2025-11"
+          const parsed = new Date(d);
+          return !isNaN(parsed) ? parsed.toISOString().slice(0, 7) : null;
+        })
+        .filter(Boolean)
+    )
+  );
 
   useEffect(() => {
     fetchJournalAndPages();
@@ -54,12 +85,31 @@ const AllPages = () => {
 
   const filteredPages = pages
     .filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(p => filterDate ? p.createdAt?.includes(filterDate) : true)
-    .filter(p => filterLocation ? p.location === filterLocation : true)
-    .filter(p => filterTags.length > 0 ? filterTags.every(tag => p.tags?.includes(tag)) : true);
+    .filter(p => {
+      if (!filterDate) return true;
+      const d = p.metadata?.date;
+      if (!d) return false;
+      const parsed = new Date(d);
+      const yearMonth = !isNaN(parsed) ? parsed.toISOString().slice(0, 7) : '';
+      return yearMonth === filterDate;
+    })
+
+    .filter(p => {
+      if (!filterLocation) return true;
+      return p.metadata?.location === filterLocation;
+    })
+
+    .filter(p => {
+      if (filterTags.length === 0) return true;
+      let tags = p.metadata?.tags || [];
+      if (typeof tags === 'string') {
+        tags = tags.split(',').map(t => t.trim());
+      }
+      return filterTags.every(tag => tags.includes(tag));
+    });
 
   const handleViewPage = (pageId) => {
-    navigate(`/journals/${journalId}/pages/${pageId}`);
+    navigate(`/journals/${journalId}/view/${pageId}`);
   };
 
   const handleAddPage = () => {
@@ -115,26 +165,30 @@ const AllPages = () => {
 
         <div className="filter-group">
           <label>Date:</label>
-          <input
-            type="month"
-            value={filterDate}
-            onChange={e => setFilterDate(e.target.value)}
-          />
+            <select value={filterDate} onChange={e => setFilterDate(e.target.value)}>
+              <option value="">All</option>
+              {uniqueDates.map(date => (
+                <option key={date} value={date}>{date}</option>
+              ))}
+            </select>
         </div>
 
         <div className="filter-group">
           <label>Location:</label>
-          <select value={filterLocation} onChange={e => setFilterLocation(e.target.value)}>
-            <option value="">All</option>
-            {locations.map(loc => (
-              <option key={loc} value={loc}>{loc}</option>
+            {uniqueTags.map(tag => (
+              <button
+                key={tag}
+                className={filterTags.includes(tag) ? 'selected' : ''}
+                onClick={() => toggleTag(tag)}
+              >
+                {tag}
+              </button>
             ))}
-          </select>
         </div>
 
         <div className="filter-group tags">
           <label>Tags:</label>
-          {tags.map(tag => (
+          {uniqueTags.map(tag => (
             <button
               key={tag}
               className={filterTags.includes(tag) ? 'selected' : ''}
@@ -198,5 +252,4 @@ const AllPages = () => {
     </div>
   );
 };
-
 export default AllPages;
