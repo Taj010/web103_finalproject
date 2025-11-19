@@ -42,6 +42,8 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use("/auth", authRoutes);
+
 // --------------------------------------------------
 // Multer Upload Setup
 // --------------------------------------------------
@@ -88,10 +90,6 @@ app.get(
 app.get("/auth/me", (req, res) => {
   if (!req.user) return res.json(null);
   res.json(req.user);
-});
-
-app.post("/auth/logout", (req, res) => {
-  req.logout(() => res.json({ message: "Logged out" }));
 });
 
 // --------------------------------------------------
