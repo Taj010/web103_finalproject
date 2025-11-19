@@ -75,7 +75,6 @@ const requireAuth = (req, res, next) => {
 // Auth Routes
 // --------------------------------------------------
 // Auth Routes
-import authRoutes from './routes/auth.js';
 app.use('/auth', authRoutes);
 
 // --------------------------------------------------
