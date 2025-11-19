@@ -17,20 +17,19 @@ router.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect(`${FRONTEND_URL}/journals`);
+    res.redirect(`https://stickerystory.onrender.com/journals`);  // Fixed!
   }
 );
 
 router.get('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
-    res.redirect(FRONTEND_URL);
+    res.redirect(`https://stickerystory.onrender.com`);
   });
 });
 
-router.get('/current-user', (req, res) => {
+router.get('/me', (req, res) => {
   res.json(req.user || null);
 });
-
 
 export default router;
