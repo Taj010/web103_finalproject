@@ -10,6 +10,7 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: 'https://stickerbackend.onrender.com/auth/google/callback',
+      proxy: true,  // ADD THIS LINE - fixes HTTPS issues on Render
     },
     (accessToken, refreshToken, profile, done) => {
       return done(null, profile);
