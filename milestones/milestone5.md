@@ -80,7 +80,7 @@ Complete the checklist below detailing each baseline, custom, and stretch featur
 
 ## Final Demo GIF
 
-🔗 [[Imgur](https://imgur.com/EsIuyHX)] 
+🔗 ![demo] (https://imgur.com/EsIuyHX.gif)
 
 (https://imgur.com/a/stickerystory-demo-udvQEKS#EsIuyHX)
 
