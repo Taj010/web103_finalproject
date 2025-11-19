@@ -59,10 +59,6 @@ https://imgur.com/a/UmzoKx1
 Users can tag pages with labels (e.g., “vacation,” “family”) and filter pages by these tags.
 [gif goes here]
 
-### Auto-Generated Starter Pages (Custom Feature)
-When a new journal is created, it comes with a starter page and a prompt to help users get started.
-[gif goes here]
-
 
 ## Installation Instructions
 
