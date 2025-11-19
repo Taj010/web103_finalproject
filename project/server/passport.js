@@ -11,8 +11,8 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
         process.env.NODE_ENV === 'production'
-          ? 'https://stickerbackend.onrender.com/auth/google/callback'  // ✅ Production backend
-          : 'http://localhost:3000/auth/google/callback',  // ✅ Local backend
+          ? 'https://stickerbackend.onrender.com/auth/google/callback'
+          : 'http://localhost:3000/auth/google/callback',
     },
     (accessToken, refreshToken, profile, done) => {
       return done(null, profile);

@@ -5,8 +5,8 @@ const router = express.Router();
 
 const FRONTEND_URL =
   process.env.NODE_ENV === 'production'
-    ? process.env.FRONTEND_URL_PROD || 'https://stickerystory.onrender.com'
-    : process.env.FRONTEND_URL_DEV || 'https://stickerystory.onrender.com';
+    ? 'https://stickerystory.onrender.com'
+    : 'http://localhost:5173';
 
 router.get(
   '/google',

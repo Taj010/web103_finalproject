@@ -74,26 +74,9 @@ const requireAuth = (req, res, next) => {
 // --------------------------------------------------
 // Auth Routes
 // --------------------------------------------------
-app.get("/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "https://stickerystory.onrender.com/journals",
-    failureRedirect: "https://stickerystory.onrender.com",
-  })
-);
-
-app.get("/auth/me", (req, res) => {
-  if (!req.user) return res.json(null);
-  res.json(req.user);
-});
-
-app.post("/auth/logout", (req, res) => {
-  req.logout(() => res.json({ message: "Logged out" }));
-});
+// Auth Routes
+import authRoutes from './routes/auth.js';
+app.use('/auth', authRoutes);
 
 // --------------------------------------------------
 // JOURNAL ROUTES
