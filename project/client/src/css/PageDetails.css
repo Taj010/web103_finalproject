@@ -46,6 +46,7 @@
   pointer-events: none;
   user-select: none;
   white-space: nowrap;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 /* Read-only form fields */

@@ -8,12 +8,26 @@ const PreviewPage = () => {
   const { journalId, pageId } = useParams();
   
   const [pageData, setPageData] = useState(null);
+  const [journalData, setJournalData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
-    if (pageId) {
+    if (pageId && journalId) {
+      // Fetch journal data
+      fetch(`http://localhost:3000/api/journals/${journalId}`, {
+        credentials: 'include'
+      })
+        .then(res => res.json())
+        .then(data => {
+          setJournalData(data);
+        })
+        .catch(err => {
+          console.error('Failed to fetch journal:', err);
+        });
+
+      // Fetch page data
       fetch(`http://localhost:3000/api/journals/${journalId}/pages/${pageId}`, {
         credentials: 'include'
       })
@@ -126,7 +140,8 @@ const PreviewPage = () => {
           minHeight: '500px',
           position: 'relative',
           width: '100%',
-          aspectRatio: '4/3'
+          aspectRatio: '4/3',
+          fontFamily: "'Georgia', 'Times New Roman', serif"
         }}
       >
         {/* Images */}
@@ -194,7 +209,8 @@ const PreviewPage = () => {
               left: `${(text.x / 800) * 100}%`,
               top: `${(text.y / 600) * 100}%`,
               fontSize: `${(text.fontSize / 800) * 100}%`,
-              color: text.color
+              color: text.color,
+              fontFamily: "'Georgia', 'Times New Roman', serif"
             }}
           >
             {text.content}
@@ -320,7 +336,7 @@ const PreviewPage = () => {
         </div>
       )}
       <PageLayout
-        title="Page Preview"
+        title={journalData ? `Page Preview - ${journalData.name}` : "Page Preview"}
         pagePreview={renderPagePreview()}
         formFields={renderFormFields()}
         footerActions={renderFooterActions()}

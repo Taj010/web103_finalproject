@@ -16,9 +16,40 @@ const AllPages = () => {
   const [filterTags, setFilterTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Example tags and locations
-  const tags = ['Travel', 'Work', 'Personal', 'School'];
-  const locations = ['New York', 'Los Angeles', 'Chicago', 'Other'];
+  // Extract unique locations and tags from pages
+  const getUniqueLocations = () => {
+    const locationSet = new Set();
+    pages.forEach(page => {
+      if (page.metadata?.location && page.metadata.location.trim()) {
+        locationSet.add(page.metadata.location.trim());
+      }
+    });
+    return Array.from(locationSet).sort();
+  };
+
+  const getUniqueTags = () => {
+    const tagSet = new Set();
+    pages.forEach(page => {
+      if (page.metadata?.tags) {
+        let tags = page.metadata.tags;
+        // Handle both array and string formats
+        if (typeof tags === 'string') {
+          tags = tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+        }
+        if (Array.isArray(tags)) {
+          tags.forEach(tag => {
+            if (tag && tag.trim()) {
+              tagSet.add(tag.trim());
+            }
+          });
+        }
+      }
+    });
+    return Array.from(tagSet).sort();
+  };
+
+  const locations = getUniqueLocations();
+  const tags = getUniqueTags();
 
   useEffect(() => {
     fetchJournalAndPages();
@@ -52,11 +83,54 @@ const AllPages = () => {
 
   const handleBack = () => navigate('/journals');
 
+  // Helper function to get page display title
+  const getPageTitle = (page) => {
+    // First check for saved title in metadata
+    if (page.metadata?.title) return page.metadata.title;
+    // Then check for prompt
+    if (page.prompt) return page.prompt;
+    // Then check for first text element
+    if (page.textElements && page.textElements.length > 0) {
+      return page.textElements[0].text || 'Untitled Page';
+    }
+    return 'Untitled Page';
+  };
+
   const filteredPages = pages
-    .filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(p => filterDate ? p.createdAt?.includes(filterDate) : true)
-    .filter(p => filterLocation ? p.location === filterLocation : true)
-    .filter(p => filterTags.length > 0 ? filterTags.every(tag => p.tags?.includes(tag)) : true);
+    .filter(p => {
+      const title = getPageTitle(p);
+      return title.toLowerCase().includes(searchTerm.toLowerCase());
+    })
+    .filter(p => {
+      if (!filterDate) return true;
+      // Filter by year-month (format: YYYY-MM)
+      const pageDate = p.createdAt || p.metadata?.date;
+      if (!pageDate) return false;
+      const dateObj = new Date(pageDate);
+      const pageYearMonth = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+      return pageYearMonth === filterDate;
+    })
+    .filter(p => {
+      if (!filterLocation) return true;
+      return p.metadata?.location === filterLocation;
+    })
+    .filter(p => {
+      if (filterTags.length === 0) return true;
+      const pageTags = p.metadata?.tags || [];
+      let pageTagsArray = [];
+      if (typeof pageTags === 'string') {
+        pageTagsArray = pageTags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+      } else if (Array.isArray(pageTags)) {
+        pageTagsArray = pageTags.map(t => typeof t === 'string' ? t.trim() : t);
+      }
+      // Check if all selected filter tags are present in page tags
+      return filterTags.every(filterTag => 
+        pageTagsArray.some(pageTag => 
+          (typeof pageTag === 'string' ? pageTag.toLowerCase() : String(pageTag).toLowerCase()) === 
+          filterTag.toLowerCase()
+        )
+      );
+    });
 
   const handleViewPage = (pageId) => {
     navigate(`/journals/${journalId}/pages/${pageId}`);
@@ -126,23 +200,31 @@ const AllPages = () => {
           <label>Location:</label>
           <select value={filterLocation} onChange={e => setFilterLocation(e.target.value)}>
             <option value="">All</option>
-            {locations.map(loc => (
-              <option key={loc} value={loc}>{loc}</option>
-            ))}
+            {locations.length > 0 ? (
+              locations.map(loc => (
+                <option key={loc} value={loc}>{loc}</option>
+              ))
+            ) : (
+              <option disabled>No locations available</option>
+            )}
           </select>
         </div>
 
         <div className="filter-group tags">
           <label>Tags:</label>
-          {tags.map(tag => (
-            <button
-              key={tag}
-              className={filterTags.includes(tag) ? 'selected' : ''}
-              onClick={() => toggleTag(tag)}
-            >
-              {tag}
-            </button>
-          ))}
+          {tags.length > 0 ? (
+            tags.map(tag => (
+              <button
+                key={tag}
+                className={filterTags.includes(tag) ? 'selected' : ''}
+                onClick={() => toggleTag(tag)}
+              >
+                {tag}
+              </button>
+            ))
+          ) : (
+            <span className="no-tags-message">No tags available</span>
+          )}
         </div>
       </div>
 
@@ -168,16 +250,32 @@ const AllPages = () => {
           {filteredPages.map(page => (
             <div key={page.id} className="journal-card" onClick={() => handleViewPage(page.id)}>
               <div className="journal-cover">
-                {/* Placeholder color cover for pages */}
-                <div className="color-cover" style={{ backgroundColor: '#FFFFFF' }}></div>
+                {page.pageBackgroundImage ? (
+                  <img 
+                    src={
+                      page.pageBackgroundImage?.startsWith('/pages') 
+                        ? page.pageBackgroundImage 
+                        : `http://localhost:3000${page.pageBackgroundImage}`
+                    }
+                    alt="Page background" 
+                  />
+                ) : (
+                  <div 
+                    className="color-cover" 
+                    style={{ backgroundColor: page.pageColor || '#FFFFFF' }}
+                  ></div>
+                )}
               </div>
 
               <div className="journal-info">
                 <div className="journal-header">
-                  <h2>{page.title}</h2>
+                  <h2>{getPageTitle(page)}</h2>
                   <button 
                     className="add-page-button"
-                    onClick={() => handleViewPage(page.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewPage(page.id);
+                    }}
                     aria-label="View page"
                   >
                     <i className="fa-solid fa-eye"></i>
@@ -188,7 +286,7 @@ const AllPages = () => {
                   <span className="page-count">
                     {new Date(page.createdAt).toLocaleDateString()}
                   </span>
-                  {page.location && <span className="page-count"> | {page.location}</span>}
+                  {page.metadata?.location && <span className="page-count"> | {page.metadata.location}</span>}
                 </div>
               </div>
             </div>
