@@ -17,14 +17,14 @@ router.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect(`https://stickerystory.onrender.com/journals`);  // Fixed!
+    res.redirect(`${FRONTEND_URL}/journals`);  // Fixed!
   }
 );
 
 router.get('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
-    res.redirect(`https://stickerystory.onrender.com`);
+    res.redirect(FRONTEND_URL);
   });
 });
 
