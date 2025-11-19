@@ -12,6 +12,9 @@ const Home = () => {
       <h1>
         Welcome to <br /> StickerStory
       </h1>
+      <p>
+        Your digital memory journal
+      </p>
       <div className="home-buttons">
         <button className="btn-filled" onClick={handleGoogleLogin}>
           Login with Google

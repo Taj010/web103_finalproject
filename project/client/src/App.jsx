@@ -18,10 +18,13 @@ const App = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/auth/current-user', { credentials: 'include' })
+    fetch('http://localhost:3000/auth/me', { credentials: 'include' })  // Change this
       .then(res => res.json())
-      .then(data => setUser(data))
-      .catch(err => console.log(err));
+      .then(data => {
+        console.log('👤 User data received:', data); // Add this debug log
+        setUser(data);
+      })
+      .catch(err => console.log('Error fetching user:', err));
   }, []);
 
   const handleLogout = () => {
@@ -33,7 +36,7 @@ const App = () => {
     { path: '/journals', element: <AllJournals /> },
     { path: '/journals/create', element: <CreateJournal /> },
     { path: '/journals/:journalId/edit', element: <EditJournal /> },
-    { path: '/journals/:journalId/pages', element: <AllPages /> },
+    { path: '/journals/:journalId', element: <AllPages /> },
     { path: '/journals/:journalId/pages/add', element: <AddPage /> },
     { path: '/journals/:journalId/pages/:pageId', element: <PageDetails /> },
     { path: '/journals/:journalId/pages/:pageId/preview', element: <PreviewPage /> },
@@ -41,7 +44,6 @@ const App = () => {
 
   return (
     <div className="app">
-      {/* Show Navigation only on pages other than Home */}
       {location.pathname !== '/' && (
         <Navigation
           userName={user?.displayName}
