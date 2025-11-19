@@ -55,7 +55,7 @@ const PreviewPage = () => {
 
     setIsSaving(true);
     try {
-      const url = 'https://stickerbackend.onrender.com/api/journals/${journalId}/pages/${pageId}`;
+      const url = `https://stickerbackend.onrender.com/api/journals/${journalId}/pages/${pageId}`;
       
       const response = await fetch(url, {
         method: 'PUT',
