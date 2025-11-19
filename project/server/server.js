@@ -11,8 +11,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import authRoutes from './routes/auth.js';
 import fs from "fs";
-import { getPages, getPageById, getPagesByJournalId } from "./data/pages.js";
-import { getJournals, addJournal, getJournalById } from './data/journals.js';
+import createPagesRouter from './routes/pages.js';
 
 let journals = [];
 let pages = [];
@@ -152,57 +151,10 @@ app.get("/api/journals", requireAuth, (req, res) => {
 });
 
 // --------------------------------------------------
-// PAGE ROUTES
+// Pages routes (using router from AddPage branch)
 // --------------------------------------------------
-
-// Create page
-app.post("/api/journals/:journalId/pages", requireAuth, (req, res) => {
-  const journalId = req.params.journalId;
-  const journal = journals.find(j => j.id == journalId);
-
-  if (!journal) return res.status(404).json({ error: "Journal not found" });
-
-  const { title, content, tags, location } = req.body;
-
-  const newPage = {
-    id: Date.now(),
-    journalId,
-    title,
-    content,
-    tags: tags || [],
-    location: location || "",
-    createdAt: new Date().toISOString(),
-  };
-
-  pages.push(newPage);
-
-  journal.pageCount = pages.filter(p => p.journalId == journalId).length;
-
-  res.status(201).json(newPage);
-});
-
-// Get single page
-app.get("/api/journals/:journalId/pages/:pageId", requireAuth, (req, res) => {
-  const page = pages.find(p => p.id == req.params.pageId);
-  if (!page) return res.status(404).json({ error: "Page not found" });
-  res.json(page);
-});
-
-// Get all pages for a journal
-app.get("/api/journals/:journalId/pages", requireAuth, (req, res) => {
-  const journalId = parseInt(req.params.journalId, 10);
-  const journalPages = pages.filter(p => p.journalId === journalId);
-  res.json(journalPages);
-});
-
-// Delete a page
-app.delete("/api/journals/:journalId/pages/:pageId", requireAuth, (req, res) => {
-  const index = pages.findIndex(p => p.id == req.params.pageId);
-  if (index === -1) return res.status(404).json({ error: "Page not found" });
-
-  pages.splice(index, 1);
-  res.json({ message: "Page deleted" });
-});
+const pagesRouter = createPagesRouter(journals, requireAuth);
+app.use('/', pagesRouter);
 
 // --------------------------------------------------
 // JOURNAL :id ROUTES (these must come LAST)
