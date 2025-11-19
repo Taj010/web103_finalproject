@@ -3,12 +3,13 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: '../server/public',
-    emptyOutDir: true
-  },
+  export default defineConfig({
+    plugins: [react()],
+    build: {
+      outDir: 'dist',
+    }
+  })
+
   resolve: {
     alias: {
       'picocss': path.resolve(__dirname, '../node_modules/@picocss/pico/css')
