@@ -8,7 +8,7 @@ import path from 'path'
     build: {
       outDir: 'dist',
     }
-  })
+  },
 
   resolve: {
     alias: {
