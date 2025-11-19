@@ -4,7 +4,7 @@ CodePath WEB103 Final Project
 
 Designed and developed by: Kelly Chan, Arsheen Taj Syed
 
-🔗 Link to deployed app:
+🔗 Link to deployed app: https://stickerystory.onrender.com/
 
 ## About
 
