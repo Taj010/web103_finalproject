@@ -19,6 +19,7 @@
   margin: 0.5rem;
   font-size: 0.9rem;
   color: #3d2817;
+  font-family: 'Roboto', sans-serif;
 }
 
 .page-preview-spotify {
@@ -46,7 +47,7 @@
   pointer-events: none;
   user-select: none;
   white-space: nowrap;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Read-only form fields */
@@ -60,10 +61,12 @@
   min-height: 2.5rem;
   white-space: pre-wrap;
   word-wrap: break-word;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Tags Section */
 .tags-input-container {
+  font-family: 'Roboto', sans-serif;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -186,12 +189,14 @@
   color: #3d2817;
   line-height: 1.5;
   font-style: italic;
+  font-family: 'Roboto', sans-serif;
 }
 
 .page-form-spotify-display {
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid #e0d9c7;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Success Message Overlay */

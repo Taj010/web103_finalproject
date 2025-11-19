@@ -133,7 +133,7 @@ const AllPages = () => {
     });
 
   const handleViewPage = (pageId) => {
-    navigate(`/journals/${journalId}/pages/${pageId}`);
+    navigate(`/journals/${journalId}/view/${pageId}`);
   };
 
   const handleAddPage = () => {

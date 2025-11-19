@@ -10,6 +10,7 @@ import AllPages from './pages/AllPages';
 import PageDetails from './pages/PageDetails';
 import AddPage from './pages/AddPage';
 import PreviewPage from './pages/PreviewPage';
+import JournalPage from './pages/JournalPage';
 
 import './App.css';
 
@@ -40,6 +41,7 @@ const App = () => {
     { path: '/journals/:journalId/pages/add', element: <AddPage /> },
     { path: '/journals/:journalId/pages/:pageId', element: <PageDetails /> },
     { path: '/journals/:journalId/pages/:pageId/preview', element: <PreviewPage /> },
+    { path: '/journals/:journalId/view/:pageId', element: <JournalPage /> },
   ]);
 
   return (

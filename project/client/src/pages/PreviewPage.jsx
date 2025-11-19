@@ -74,7 +74,7 @@ const PreviewPage = () => {
       setShowSuccessMessage(true);
       // Navigate to journals page after showing success message
       setTimeout(() => {
-        navigate('/journals');
+        navigate(`/journals/${journalId}`);
       }, 1500);
     } catch (error) {
       console.error('Failed to save:', error);

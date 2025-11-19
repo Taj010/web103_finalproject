@@ -32,7 +32,7 @@ const EditorSidebar = ({
       {/* Step 4: Page Background Section */}
       <div className="editor-section">
         <div className="section-header">
-          <span className="star-icon">⭐</span>
+          <span className="star-icon"><i class="fa-solid fa-star"></i></span>
           <h3 className="section-title">Page Background</h3>
         </div>
         <div className="page-background-swatches">
@@ -65,7 +65,7 @@ const EditorSidebar = ({
           className={`section-header clickable ${expandedSections.stickers ? 'expanded' : ''}`}
           onClick={() => toggleSection('stickers')}
         >
-          <span className="star-icon">⭐</span>
+          <span className="star-icon"><i class="fa-solid fa-star"></i></span>
           <h3 className="section-title">Stickers</h3>
           <span className={`chevron-icon ${expandedSections.stickers ? 'rotated' : ''}`}>▼</span>
         </div>
@@ -99,7 +99,7 @@ const EditorSidebar = ({
           className={`section-header clickable ${expandedSections.doodles ? 'expanded' : ''}`}
           onClick={() => toggleSection('doodles')}
         >
-          <span className="star-icon">⭐</span>
+          <span className="star-icon"><i class="fa-solid fa-star"></i></span>
           <h3 className="section-title">Doodles</h3>
           <span className={`chevron-icon ${expandedSections.doodles ? 'rotated' : ''}`}>▼</span>
         </div>
@@ -167,7 +167,7 @@ const EditorSidebar = ({
           className={`section-header clickable ${expandedSections.text ? 'expanded' : ''}`}
           onClick={() => toggleSection('text')}
         >
-          <span className="star-icon">⭐</span>
+          <span className="star-icon"><i class="fa-solid fa-star"></i></span>
           <h3 className="section-title">Text</h3>
           <span className={`chevron-icon ${expandedSections.text ? 'rotated' : ''}`}>▼</span>
         </div>
@@ -226,7 +226,7 @@ const EditorSidebar = ({
           className={`section-header clickable ${expandedSections.upload ? 'expanded' : ''}`}
           onClick={() => toggleSection('upload')}
         >
-          <span className="star-icon">⭐</span>
+          <span className="star-icon"><i class="fa-solid fa-star"></i></span>
           <h3 className="section-title">Upload Images</h3>
           <span className={`chevron-icon ${expandedSections.upload ? 'rotated' : ''}`}>▼</span>
         </div>
@@ -272,4 +272,3 @@ const EditorSidebar = ({
 };
 
 export default EditorSidebar;
-
