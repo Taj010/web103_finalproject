@@ -1,3 +1,7 @@
-.envnode_modules/
+node_modules/
+.env
 package-lock.json
 .vite/
+uploads/
+dist/
+*.log
